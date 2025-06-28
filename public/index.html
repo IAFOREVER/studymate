@@ -81,6 +81,178 @@
       #datePickerCalendarEvent .day-cell.border-blue-500 {
           border-color: #3B82F6;
       }
+
+      /* Dark Mode Styles */
+      .dark {
+        --bg-primary: #1a1a2e; /* Fondo principal oscuro */
+        --bg-secondary: #16213e; /* Fondo secundario (contenedores, modales) */
+        --bg-accent: #0f3460; /* Fondo de acento (botones, elementos destacados) */
+        --text-primary: #e94560; /* Texto principal (neón rosa/rojo) */
+        --text-secondary: #c0c0c0; /* Texto secundario (gris claro) */
+        --border-color: #e94560; /* Color de borde (neón rosa/rojo) */
+        --neon-blue: #50c8ff; /* Azul neón para iconos y elementos interactivos */
+        --neon-green: #39ff14; /* Verde neón para mensajes de éxito o indicadores positivos */
+      }
+
+      .dark body {
+        background-color: var(--bg-primary);
+        color: var(--text-secondary);
+      }
+      .dark .bg-slate-50 { /* Reemplaza el fondo claro principal */
+        background-color: var(--bg-primary) !important;
+      }
+      .dark header {
+        background-color: var(--bg-secondary);
+        border-bottom-color: var(--border-color);
+      }
+      .dark header h2, .dark header a, .dark header div[data-icon] {
+        color: var(--text-primary);
+      }
+      .dark header button {
+        background-color: var(--bg-accent);
+        color: var(--neon-blue);
+      }
+      .dark header button:hover {
+        background-color: var(--neon-blue);
+        color: var(--bg-accent);
+      }
+      .dark #mobile-menu {
+        background-color: var(--bg-secondary);
+      }
+      .dark #mobile-menu a {
+        color: var(--text-primary);
+      }
+      .dark #mobile-menu a:hover {
+        color: var(--neon-blue);
+      }
+      .dark #mobile-menu button {
+        color: var(--text-primary);
+      }
+       .dark .layout-content-container { /* Estilo general para los contenedores de sección */
+        background-color: var(--bg-secondary) !important;
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 0 15px var(--border-color);
+      }
+      .dark .layout-content-container h2, .dark .layout-content-container h3 {
+        color: var(--text-primary);
+      }
+      .dark .layout-content-container p {
+        color: var(--text-secondary);
+      }
+      .dark .layout-content-container button:not(#darkModeToggleBtn):not(#bellBtn):not(#hamburgerBtn):not(#closeMobileMenuBtn) { /* Botones dentro de las secciones */
+        background-color: var(--bg-accent);
+        color: var(--neon-blue);
+        border: 1px solid var(--neon-blue);
+      }
+      .dark .layout-content-container button:not(#darkModeToggleBtn):not(#bellBtn):not(#hamburgerBtn):not(#closeMobileMenuBtn):hover {
+        background-color: var(--neon-blue);
+        color: var(--bg-accent);
+      }
+      .dark input[type="text"], .dark textarea, .dark input[readonly] {
+        background-color: var(--bg-primary);
+        color: var(--text-secondary);
+        border-color: var(--border-color);
+      }
+      .dark input[type="checkbox"] {
+        accent-color: var(--neon-blue);
+      }
+      .dark label {
+        color: var(--text-secondary);
+      }
+      /* Calendario en modo oscuro */
+      .dark #monthDisplay, .dark #weekDisplay, .dark #dayDisplay, .dark #currentDayNameDisplay {
+        color: var(--text-primary);
+      }
+      .dark #calendarDaysMonth button, .dark #calendarDaysWeek button, .dark #calendarDaysDay button {
+        color: var(--text-secondary);
+        border-color: var(--border-color);
+      }
+      .dark #calendarDaysMonth button:hover, .dark #calendarDaysWeek button:hover, .dark #calendarDaysDay button:hover {
+        background-color: var(--bg-accent);
+      }
+      .dark .selected-day-bg {
+        background-color: var(--neon-blue) !important; /* Azul neón para el día seleccionado */
+        color: var(--bg-primary) !important;
+      }
+      .dark .day-name-header {
+        background-color: var(--bg-accent);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+      .dark #datePickerCalendar, .dark #datePickerCalendarAssignment, .dark #datePickerCalendarExam, .dark #datePickerCalendarEvent {
+        background-color: var(--bg-secondary);
+        border-color: var(--border-color);
+        box-shadow: 0 0 10px var(--border-color);
+      }
+      .dark #datePickerCalendar .day-cell, .dark #datePickerCalendarAssignment .day-cell, .dark #datePickerCalendarExam .day-cell, .dark #datePickerCalendarEvent .day-cell {
+        color: var(--text-secondary);
+      }
+      .dark #datePickerCalendar .day-cell:hover, .dark #datePickerCalendarAssignment .day-cell:hover, .dark #datePickerCalendarExam .day-cell:hover, .dark #datePickerCalendarEvent .day-cell:hover {
+        background-color: var(--bg-accent);
+      }
+      .dark #datePickerCalendar .day-cell.bg-blue-500, .dark #datePickerCalendarAssignment .day-cell.bg-blue-500, .dark #datePickerCalendarExam .day-cell.bg-blue-500, .dark #datePickerCalendarEvent .day-cell.bg-blue-500 {
+        background-color: var(--neon-blue) !important;
+        color: var(--bg-primary) !important;
+      }
+      .dark #datePickerCalendar .day-cell.border-blue-500, .dark #datePickerCalendarAssignment .day-cell.border-blue-500, .dark #datePickerCalendarExam .day-cell.border-blue-500, .dark #datePickerCalendarEvent .day-cell.border-blue-500 {
+        border-color: var(--neon-blue) !important;
+      }
+      .dark #datePickerMonthDisplay, .dark #datePickerMonthDisplayAssignment, .dark #datePickerMonthDisplayExam, .dark #datePickerMonthDisplayEvent {
+        color: var(--text-primary);
+      }
+      .dark #prevDatePickerMonth, .dark #nextDatePickerMonth,
+      .dark #prevDatePickerMonthAssignment, .dark #nextDatePickerMonthAssignment,
+      .dark #prevDatePickerMonthExam, .dark #nextDatePickerMonthExam,
+      .dark #prevDatePickerMonthEvent, .dark #nextDatePickerMonthEvent {
+        color: var(--neon-blue);
+      }
+       /* Estilos para los contenedores de eventos */
+      .dark #upcomingEvents .flex.items-center.gap-4,
+      .dark #selectedDayEventsContainer .flex.items-center.gap-4,
+      .dark #monthEventsContainer .flex.items-center.gap-4,
+      .dark #weekEventsContainer .flex.items-center.gap-4 {
+        background-color: var(--bg-accent) !important; /* Usa el color de acento para el fondo de los eventos */
+        color: var(--text-secondary) !important;
+        border: 1px solid var(--neon-blue);
+        box-shadow: 0 0 5px var(--neon-blue);
+      }
+      .dark #upcomingEvents .flex.items-center.gap-4 p,
+      .dark #selectedDayEventsContainer .flex.items-center.gap-4 p,
+      .dark #monthEventsContainer .flex.items-center.gap-4 p,
+      .dark #weekEventsContainer .flex.items-center.gap-4 p {
+        color: var(--text-secondary) !important;
+      }
+      .dark #upcomingEvents .bg-white.bg-opacity-75,
+      .dark #selectedDayEventsContainer .bg-white.bg-opacity-75,
+      .dark #monthEventsContainer .bg-white.bg-opacity-75,
+      .dark #weekEventsContainer .bg-white.bg-opacity-75 {
+        background-color: var(--bg-primary) !important; /* Fondo del icono */
+        color: var(--neon-blue) !important; /* Color del icono */
+      }
+       /* Mensajes de éxito */
+      .dark #successMessage .bg-green-100,
+      .dark #assignmentSuccessMessage .bg-green-100,
+      .dark #examSuccessMessage .bg-green-100,
+      .dark #eventSuccessMessage .bg-green-100 {
+        background-color: var(--bg-accent) !important;
+        color: var(--neon-green) !important;
+        border: 1px solid var(--neon-green);
+        box-shadow: 0 0 8px var(--neon-green);
+      }
+      .dark #successMessage .text-green-800,
+      .dark #assignmentSuccessMessage .text-green-800,
+      .dark #examSuccessMessage .text-green-800,
+      .dark #eventSuccessMessage .text-green-800 {
+        color: var(--neon-green) !important;
+      }
+      .dark .bg-blue-100 { background-color: var(--bg-accent) !important; }
+      .dark .text-blue-800 { color: var(--text-primary) !important; }
+      .dark .text-blue-700 { color: var(--text-secondary) !important; }
+      .dark .bg-purple-100 { background-color: var(--bg-accent) !important; }
+      .dark .text-purple-800 { color: var(--text-primary) !important; }
+      .dark .text-purple-700 { color: var(--text-secondary) !important; }
+
     </style>
   </head>
   <body>
@@ -115,6 +287,13 @@
                         <path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path>
                     </svg>
                 </div>
+            </button>
+            <button id="darkModeToggleBtn" class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#e7edf3] text-[#334155] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 shadow-sm hover:shadow-md transition-shadow mr-2">
+              <div id="darkModeIconContainer" class="text-[#334155]" data-icon="Moon" data-size="20px" data-weight="regular">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                  <path d="M216.7,152.63A96.83,96.83,0,0,1,103.37,39.3,8,8,0,0,0,96,32,96,96,0,0,0,96,224a95.42,95.42,0,0,0,32.47-6.09,8,8,0,0,0,5.86-14.68A96.23,96.23,0,0,1,128,128,97.61,97.61,0,0,1,216.7,152.63Z"></path>
+                </svg>
+              </div>
             </button>
             <button id="bellBtn"
               class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#e7edf3] text-[#334155] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 shadow-sm hover:shadow-md transition-shadow"
@@ -1875,7 +2054,9 @@
 
 
       // Initial setup on DOMContentLoaded
-      document.addEventListener('DOMContentLoaded', async () => { 
+      document.addEventListener('DOMContentLoaded', async () => {
+        // Dark mode initialization is now in js/dark_mode.js
+
         // Inicializar Firebase
         try {
             const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
@@ -2119,5 +2300,6 @@
         showSection('calendar-section'); // Initially show calendar section
       });
     </script>
+    <script type="module" src="js/dark_mode.js"></script>
   </body>
 </html>
