@@ -1,0 +1,2302 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&family=Plus+Jakarta+Sans%3Awght%40400%3B500%3B700%3B800"
+    />
+
+    <title>StudyMate Agenda - Móvil</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style>
+      /* Estilos adicionales para asegurar que el contenido se ajuste correctamente en pantallas pequeñas */
+      @media (max-width: 768px) {
+        /* Las clases px-40, etc., ahora se gestionan con px-4 sm:px-10 md:px-40 en el HTML */
+        .layout-content-container {
+          max-width: 100%; /* Asegurar que el contenedor de contenido ocupa todo el ancho disponible */
+        }
+        /* header-links y h2.text-[#334155] text-xl font-bold ya tienen clases responsivas */
+      }
+      /* Custom styles for subtle hover effects */
+      button:hover div, a:hover {
+        opacity: 0.8;
+        transition: opacity 0.2s ease-in-out;
+      }
+      button:active div, a:active {
+        opacity: 0.6;
+      }
+      /* Style for selected calendar day */
+      .selected-day-bg {
+        background-color: #6A8EEB;
+      }
+      /* Style for calendar day headers */
+      .day-name-header {
+        text-transform: uppercase;
+        font-size: 0.8rem; /* Smaller font for abbreviations */
+        background-color: #F0F4F8; /* Soft background color for day names */
+      }
+
+      /* Date picker specific styles for better aesthetics */
+      #datePickerCalendar .day-cell, 
+      #datePickerCalendarAssignment .day-cell,
+      #datePickerCalendarExam .day-cell,
+      #datePickerCalendarEvent .day-cell {
+          height: 2.25rem; /* size-9 = 36px */
+          width: 2.25rem; /* size-9 = 36px */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 9999px; /* rounded-full */
+          font-weight: 500; /* medium font */
+          transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+      }
+      #datePickerCalendar .day-cell.hover\:bg-blue-100:hover, 
+      #datePickerCalendarAssignment .day-cell.hover\:bg-blue-100:hover,
+      #datePickerCalendarExam .day-cell.hover\:bg-blue-100:hover,
+      #datePickerCalendarEvent .day-cell.hover\:bg-blue-100:hover {
+          background-color: #DBEAFE; /* blue-100 */
+      }
+      #datePickerCalendar .day-cell.bg-blue-500, 
+      #datePickerCalendarAssignment .day-cell.bg-blue-500,
+      #datePickerCalendarExam .day-cell.bg-blue-500,
+      #datePickerCalendarEvent .day-cell.bg-blue-500 {
+          background-color: #3B82F6; /* blue-500 */
+          color: white;
+      }
+      #datePickerCalendar .day-cell.border, 
+      #datePickerCalendarAssignment .day-cell.border,
+      #datePickerCalendarExam .day-cell.border,
+      #datePickerCalendarEvent .day-cell.border {
+          border-width: 1px;
+      }
+      #datePickerCalendar .day-cell.border-blue-500, 
+      #datePickerCalendarAssignment .day-cell.border-blue-500,
+      #datePickerCalendarExam .day-cell.border-blue-500,
+      #datePickerCalendarEvent .day-cell.border-blue-500 {
+          border-color: #3B82F6;
+      }
+
+      /* Dark Mode Styles */
+      .dark {
+        --bg-primary: #1a1a2e; /* Fondo principal oscuro */
+        --bg-secondary: #16213e; /* Fondo secundario (contenedores, modales) */
+        --bg-accent: #0f3460; /* Fondo de acento (botones, elementos destacados) */
+        --text-primary: #e94560; /* Texto principal (neón rosa/rojo) */
+        --text-secondary: #c0c0c0; /* Texto secundario (gris claro) */
+        --border-color: #e94560; /* Color de borde (neón rosa/rojo) */
+        --neon-blue: #50c8ff; /* Azul neón para iconos y elementos interactivos */
+        --neon-green: #39ff14; /* Verde neón para mensajes de éxito o indicadores positivos */
+      }
+
+      .dark body {
+        background-color: var(--bg-primary);
+        color: var(--text-secondary);
+      }
+      .dark .bg-slate-50 { /* Reemplaza el fondo claro principal */
+        background-color: var(--bg-primary) !important;
+      }
+      .dark header {
+        background-color: var(--bg-secondary);
+        border-bottom-color: var(--border-color);
+      }
+      .dark header h2, .dark header a, .dark header div[data-icon] {
+        color: var(--text-primary);
+      }
+      .dark header button {
+        background-color: var(--bg-accent);
+        color: var(--neon-blue);
+      }
+      .dark header button:hover {
+        background-color: var(--neon-blue);
+        color: var(--bg-accent);
+      }
+      .dark #mobile-menu {
+        background-color: var(--bg-secondary);
+      }
+      .dark #mobile-menu a {
+        color: var(--text-primary);
+      }
+      .dark #mobile-menu a:hover {
+        color: var(--neon-blue);
+      }
+      .dark #mobile-menu button {
+        color: var(--text-primary);
+      }
+       .dark .layout-content-container { /* Estilo general para los contenedores de sección */
+        background-color: var(--bg-secondary) !important;
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+        box-shadow: 0 0 15px var(--border-color);
+      }
+      .dark .layout-content-container h2, .dark .layout-content-container h3 {
+        color: var(--text-primary);
+      }
+      .dark .layout-content-container p {
+        color: var(--text-secondary);
+      }
+      .dark .layout-content-container button:not(#darkModeToggleBtn):not(#bellBtn):not(#hamburgerBtn):not(#closeMobileMenuBtn) { /* Botones dentro de las secciones */
+        background-color: var(--bg-accent);
+        color: var(--neon-blue);
+        border: 1px solid var(--neon-blue);
+      }
+      .dark .layout-content-container button:not(#darkModeToggleBtn):not(#bellBtn):not(#hamburgerBtn):not(#closeMobileMenuBtn):hover {
+        background-color: var(--neon-blue);
+        color: var(--bg-accent);
+      }
+      .dark input[type="text"], .dark textarea, .dark input[readonly] {
+        background-color: var(--bg-primary);
+        color: var(--text-secondary);
+        border-color: var(--border-color);
+      }
+      .dark input[type="checkbox"] {
+        accent-color: var(--neon-blue);
+      }
+      .dark label {
+        color: var(--text-secondary);
+      }
+      /* Calendario en modo oscuro */
+      .dark #monthDisplay, .dark #weekDisplay, .dark #dayDisplay, .dark #currentDayNameDisplay {
+        color: var(--text-primary);
+      }
+      .dark #calendarDaysMonth button, .dark #calendarDaysWeek button, .dark #calendarDaysDay button {
+        color: var(--text-secondary);
+        border-color: var(--border-color);
+      }
+      .dark #calendarDaysMonth button:hover, .dark #calendarDaysWeek button:hover, .dark #calendarDaysDay button:hover {
+        background-color: var(--bg-accent);
+      }
+      .dark .selected-day-bg {
+        background-color: var(--neon-blue) !important; /* Azul neón para el día seleccionado */
+        color: var(--bg-primary) !important;
+      }
+      .dark .day-name-header {
+        background-color: var(--bg-accent);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+      .dark #datePickerCalendar, .dark #datePickerCalendarAssignment, .dark #datePickerCalendarExam, .dark #datePickerCalendarEvent {
+        background-color: var(--bg-secondary);
+        border-color: var(--border-color);
+        box-shadow: 0 0 10px var(--border-color);
+      }
+      .dark #datePickerCalendar .day-cell, .dark #datePickerCalendarAssignment .day-cell, .dark #datePickerCalendarExam .day-cell, .dark #datePickerCalendarEvent .day-cell {
+        color: var(--text-secondary);
+      }
+      .dark #datePickerCalendar .day-cell:hover, .dark #datePickerCalendarAssignment .day-cell:hover, .dark #datePickerCalendarExam .day-cell:hover, .dark #datePickerCalendarEvent .day-cell:hover {
+        background-color: var(--bg-accent);
+      }
+      .dark #datePickerCalendar .day-cell.bg-blue-500, .dark #datePickerCalendarAssignment .day-cell.bg-blue-500, .dark #datePickerCalendarExam .day-cell.bg-blue-500, .dark #datePickerCalendarEvent .day-cell.bg-blue-500 {
+        background-color: var(--neon-blue) !important;
+        color: var(--bg-primary) !important;
+      }
+      .dark #datePickerCalendar .day-cell.border-blue-500, .dark #datePickerCalendarAssignment .day-cell.border-blue-500, .dark #datePickerCalendarExam .day-cell.border-blue-500, .dark #datePickerCalendarEvent .day-cell.border-blue-500 {
+        border-color: var(--neon-blue) !important;
+      }
+      .dark #datePickerMonthDisplay, .dark #datePickerMonthDisplayAssignment, .dark #datePickerMonthDisplayExam, .dark #datePickerMonthDisplayEvent {
+        color: var(--text-primary);
+      }
+      .dark #prevDatePickerMonth, .dark #nextDatePickerMonth, 
+      .dark #prevDatePickerMonthAssignment, .dark #nextDatePickerMonthAssignment,
+      .dark #prevDatePickerMonthExam, .dark #nextDatePickerMonthExam,
+      .dark #prevDatePickerMonthEvent, .dark #nextDatePickerMonthEvent {
+        color: var(--neon-blue);
+      }
+       /* Estilos para los contenedores de eventos */
+      .dark #upcomingEvents .flex.items-center.gap-4,
+      .dark #selectedDayEventsContainer .flex.items-center.gap-4,
+      .dark #monthEventsContainer .flex.items-center.gap-4,
+      .dark #weekEventsContainer .flex.items-center.gap-4 {
+        background-color: var(--bg-accent) !important; /* Usa el color de acento para el fondo de los eventos */
+        color: var(--text-secondary) !important;
+        border: 1px solid var(--neon-blue);
+        box-shadow: 0 0 5px var(--neon-blue);
+      }
+      .dark #upcomingEvents .flex.items-center.gap-4 p,
+      .dark #selectedDayEventsContainer .flex.items-center.gap-4 p,
+      .dark #monthEventsContainer .flex.items-center.gap-4 p,
+      .dark #weekEventsContainer .flex.items-center.gap-4 p {
+        color: var(--text-secondary) !important;
+      }
+      .dark #upcomingEvents .bg-white.bg-opacity-75,
+      .dark #selectedDayEventsContainer .bg-white.bg-opacity-75,
+      .dark #monthEventsContainer .bg-white.bg-opacity-75,
+      .dark #weekEventsContainer .bg-white.bg-opacity-75 {
+        background-color: var(--bg-primary) !important; /* Fondo del icono */
+        color: var(--neon-blue) !important; /* Color del icono */
+      }
+       /* Mensajes de éxito */
+      .dark #successMessage .bg-green-100,
+      .dark #assignmentSuccessMessage .bg-green-100,
+      .dark #examSuccessMessage .bg-green-100,
+      .dark #eventSuccessMessage .bg-green-100 {
+        background-color: var(--bg-accent) !important;
+        color: var(--neon-green) !important;
+        border: 1px solid var(--neon-green);
+        box-shadow: 0 0 8px var(--neon-green);
+      }
+      .dark #successMessage .text-green-800,
+      .dark #assignmentSuccessMessage .text-green-800,
+      .dark #examSuccessMessage .text-green-800,
+      .dark #eventSuccessMessage .text-green-800 {
+        color: var(--neon-green) !important;
+      }
+      .dark .bg-blue-100 { background-color: var(--bg-accent) !important; }
+      .dark .text-blue-800 { color: var(--text-primary) !important; }
+      .dark .text-blue-700 { color: var(--text-secondary) !important; }
+      .dark .bg-purple-100 { background-color: var(--bg-accent) !important; }
+      .dark .text-purple-800 { color: var(--text-primary) !important; }
+      .dark .text-purple-700 { color: var(--text-secondary) !important; }
+
+    </style>
+  </head>
+  <body>
+    <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
+      <div class="layout-container flex h-full grow flex-col">
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7edf3] px-4 py-3 sm:px-10">
+          <div class="flex items-center gap-2 sm:gap-4 text-[#334155]">
+            <div class="size-6">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M24 4C25.7818 14.2173 33.7827 22.2182 44 24C33.7827 25.7818 25.7818 33.7827 24 44C22.2182 33.7827 14.2173 25.7818 4 24C14.2173 22.2182 22.2182 14.2173 24 4Z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+            </div>
+            <!-- Título StudyMate visible en todas las pantallas -->
+            <h2 class="text-[#334155] text-xl font-bold leading-tight tracking-[-0.015em] block">StudyMate</h2>
+          </div>
+          <div class="flex items-center gap-x-3 ml-auto pl-4">
+            <nav class="items-center gap-4 sm:gap-9 hidden sm:flex header-links">
+              <a class="text-[#334155] text-sm font-medium leading-normal cursor-pointer hover:text-[#6A8EEB]" data-section="panel">Panel</a>
+              <a class="text-[#334155] text-sm font-medium leading-normal cursor-pointer hover:text-[#6A8EEB]" data-section="calendar">Calendario</a>
+              <a class="text-[#334155] text-sm font-medium leading-normal cursor-pointer hover:text-[#6A8EEB]" data-section="tasks">Tareas</a>
+              <a class="text-[#334155] text-sm font-medium leading-normal cursor-pointer hover:text-[#6A8EEB]" data-section="assignments">Trabajos Prácticos</a>
+              <a class="text-[#334155] text-sm font-medium leading-normal cursor-pointer hover:text-[#6A8EEB]" data-section="exams">Exámenes</a>
+              <a class="text-[#334155] text-sm font-medium leading-normal cursor-pointer hover:text-[#6A8EEB]" data-section="events">Eventos</a>
+            </nav>
+            <!-- Hamburger Menu Button for Mobile -->
+            <button id="hamburgerBtn" class="sm:hidden flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#e7edf3] text-[#334155] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 shadow-sm hover:shadow-md transition-shadow">
+                <div class="text-[#334155]" data-icon="Menu" data-size="20px" data-weight="regular">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path>
+                    </svg>
+                </div>
+            </button>
+            <button id="darkModeToggleBtn" class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#e7edf3] text-[#334155] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 shadow-sm hover:shadow-md transition-shadow mr-2">
+              <div id="darkModeIconContainer" class="text-[#334155]" data-icon="Moon" data-size="20px" data-weight="regular">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                  <path d="M216.7,152.63A96.83,96.83,0,0,1,103.37,39.3,8,8,0,0,0,96,32,96,96,0,0,0,96,224a95.42,95.42,0,0,0,32.47-6.09,8,8,0,0,0,5.86-14.68A96.23,96.23,0,0,1,128,128,97.61,97.61,0,0,1,216.7,152.63Z"></path>
+                </svg>
+              </div>
+            </button>
+            <button id="bellBtn"
+              class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#e7edf3] text-[#334155] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div class="text-[#334155]" data-icon="Bell" data-size="20px" data-weight="regular">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                  <path
+                    d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"
+                  ></path>
+                </svg>
+              </div>
+            </button>
+            <div
+              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 shadow-sm"
+              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD5ThY0z3PV7bx2DEs7VO8ruwQ3leQkuePzW0tEpRf_x6qaByVWm3UwJWKkVUmSkt8hTn_1o-f8k-Dt765vPiFNeAlbygrIYnMh7OlNE1JV4QYgqTeMQGALroNgT9QJWSUrl71Fo19le9cYeBZMVuTba_YnbXrPT8VMBsH9u1D0nudgITsgjJEQskgpBRSia-EkecLqTx3jUPxt0v4miReUAIovFSWYDSyqUVlXbuggFhRX1Wnlm4Cnf5GyDAjRQ7o5l2sqzuKhJIa");'
+            ></div>
+          </div>
+        </header>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="hidden fixed top-0 left-0 w-full h-full bg-white z-40 overflow-y-auto p-6">
+            <div class="flex justify-end mb-8">
+                <button id="closeMobileMenuBtn" class="text-[#334155] p-2 rounded-full hover:bg-gray-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31l-66.34,66.35a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66a8,8,0,0,1,11.32-11.32L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path>
+                    </svg>
+                </button>
+            </div>
+            <nav class="flex flex-col gap-6 text-xl font-semibold text-gray-800">
+                <a class="hover:text-[#6A8EEB] cursor-pointer" data-section="panel">Panel</a>
+                <a class="hover:text-[#6A8EEB] cursor-pointer" data-section="calendar">Calendario</a>
+                <a class="hover:text-[#6A8EEB] cursor-pointer" data-section="tasks">Tareas</a>
+                <a class="hover:text-[#6A8EEB] cursor-pointer" data-section="assignments">Trabajos Prácticos</a>
+                <a class="hover:text-[#6A8EEB] cursor-pointer" data-section="exams">Exámenes</a>
+                <a class="hover:text-[#6A8EEB] cursor-pointer" data-section="events">Eventos</a>
+            </nav>
+        </div>
+
+
+        <div class="flex flex-1 justify-center py-5 px-4 sm:px-10 md:px-40">
+          
+<div id="panel-section" class="layout-content-container flex-col max-w-[960px] flex-1 hidden bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-[#334155] text-3xl font-bold leading-tight tracking-[-0.015em] mb-4">Panel de Control</h2>
+            <p class="text-[#4e7497] text-base font-normal leading-normal mb-6">Bienvenido a tu panel. Aquí verás un resumen rápido de tu progreso y las actividades más importantes.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="bg-blue-100 rounded-lg p-4 shadow-md">
+                <h3 class="text-blue-800 text-lg font-bold mb-2">Tareas Pendientes</h3>
+                <p class="text-blue-700">Tienes 3 tareas para esta semana.</p>
+              </div>
+              <div class="bg-purple-100 rounded-lg p-4 shadow-md">
+                <h3 class="text-purple-800 text-lg font-bold mb-2">Próximos Exámenes</h3>
+                <p class="text-purple-700">Un examen de Matemáticas el 20 de Octubre.</p>
+              </div>
+            </div>
+            <h2 class="text-[#334155] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Próximos Eventos</h2>
+            <div id="upcomingEvents" class="flex flex-col gap-2 p-2 mb-6">
+              </div>
+          </div>
+
+          <div id="calendar-section" class="layout-content-container flex flex-col max-w-[960px] flex-1 bg-white rounded-xl shadow-lg p-6">
+            <div class="flex flex-wrap justify-between gap-3 p-4">
+              <div class="flex min-w-72 flex-col gap-3">
+                <p class="text-[#334155] tracking-light text-[32px] font-bold leading-tight">Calendario</p>
+                <p class="text-[#4e7497] text-sm font-normal leading-normal">Organiza tu tiempo y no te pierdas nada.</p>
+              </div>
+            </div>
+            
+            <div class="flex justify-center gap-2 mb-4">
+              <button class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#6A8EEB] text-white shadow-md hover:opacity-90 transition-opacity" data-calendar-view="month">Mes</button>
+              <button class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#e7edf3] text-[#334155] shadow-sm hover:bg-[#d1e2f3] transition-colors" data-calendar-view="week">Semana</button>
+              <button class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#e7edf3] text-[#334155] shadow-sm hover:bg-[#d1e2f3] transition-colors" data-calendar-view="day">Día</button>
+            </div>
+
+            <div id="month-view" class="flex flex-wrap items-center justify-center gap-6 p-4">
+              <div class="flex min-w-72 max-w-[336px] flex-1 flex-col gap-0.5">
+                <div class="flex items-center p-1 justify-between">
+                  <button id="prevMonthBtn" class="hover:bg-slate-100 rounded-full">
+                    <div class="text-[#334155] flex size-10 items-center justify-center" data-icon="CaretLeft" data-size="18px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"></path>
+                      </svg>
+                    </div>
+                  </button>
+                  <p id="monthDisplay" class="text-[#334155] text-base font-bold leading-tight flex-1 text-center">Octubre 2024</p>
+                  <button id="nextMonthBtn" class="hover:bg-slate-100 rounded-full">
+                    <div class="text-[#334155] flex size-10 items-center justify-center" data-icon="CaretRight" data-size="18px" data-weight="regular">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
+                      </svg>
+                    </div>
+                  </button>
+                </div>
+                <div class="grid grid-cols-7 w-full border-t border-r border-l border-slate-200 rounded-t-lg overflow-hidden">
+                  <p class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r border-slate-200 last:border-r-0">Lu</p>
+                  <p class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r border-slate-200 last:border-r-0">Ma</p>
+                  <p class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r border-slate-200 last:border-r-0">Mi</p>
+                  <p class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r border-slate-200 last:border-r-0">Ju</p>
+                  <p class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r border-slate-200 last:border-r-0">Vi</p>
+                  <p class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r border-slate-200 last:border-r-0">Sa</p>
+                  <p class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r-0">Do</p>
+                </div>
+                <div id="calendarDaysMonth" class="grid grid-cols-7 w-full border-b border-l border-r border-slate-200 rounded-b-lg overflow-hidden -mt-px">
+                  </div>
+              </div>
+            </div>
+
+            <div id="week-view" class="hidden flex-wrap items-center justify-center gap-6 p-4">
+                <div class="flex min-w-72 max-w-[960px] flex-1 flex-col gap-0.5">
+                    <div class="flex items-center p-1 justify-between">
+                        <button id="prevWeekBtn" class="hover:bg-slate-100 rounded-full">
+                            <div class="text-[#334155] flex size-10 items-center justify-center" data-icon="CaretLeft" data-size="18px" data-weight="regular">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256">
+                                    <path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"></path>
+                                </svg>
+                            </div>
+                        </button>
+                        <p id="weekDisplay" class="text-[#334155] text-base font-bold leading-tight flex-1 text-center">Semana Actual</p>
+                        <button id="nextWeekBtn" class="hover:bg-slate-100 rounded-full">
+                            <div class="text-[#334155] flex size-10 items-center justify-center" data-icon="CaretRight" data-size="18px" data-weight="regular">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256">
+                                    <path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
+                                </svg>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-7 w-full border-t border-r border-l border-slate-200 rounded-t-lg overflow-hidden">
+                        <p class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r border-slate-200 last:border-r-0">Lu</p>
+                        <p class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r border-slate-200 last:border-r-0">Ma</p>
+                        <p class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r border-slate-200 last:border-r-0">Mi</p>
+                        <p class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r border-slate-200 last:border-r-0">Ju</p>
+                        <p class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r border-slate-200 last:border-r-0">Vi</p>
+                        <p class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r border-slate-200 last:border-r-0">Sa</p>
+                        <p class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r-0">Do</p>
+                    </div>
+                    <div id="calendarDaysWeek" class="grid grid-cols-7 w-full border-b border-l border-r border-slate-200 rounded-b-lg overflow-hidden -mt-px">
+                        </div>
+                </div>
+            </div>
+
+            <div id="day-view" class="hidden flex-wrap items-center justify-center gap-6 p-4">
+                <div class="flex min-w-72 max-w-[960px] flex-1 flex-col gap-0.5">
+                    <div class="flex items-center p-1 justify-between">
+                        <button id="prevDayBtn" class="hover:bg-slate-100 rounded-full">
+                            <div class="text-[#334155] flex size-10 items-center justify-center" data-icon="CaretLeft" data-size="18px" data-weight="regular">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256">
+                                    <path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"></path>
+                                </svg>
+                            </div>
+                        </button>
+                        <p id="dayDisplay" class="text-[#334155] text-base font-bold leading-tight flex-1 text-center">Día Actual</p>
+                        <button id="nextDayBtn" class="hover:bg-slate-100 rounded-full">
+                            <div class="text-[#334155] flex size-10 items-center justify-center" data-icon="CaretRight" data-size="18px" data-weight="regular">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256">
+                                    <path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
+                                </svg>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 w-full border-t border-r border-l border-slate-200 rounded-t-lg overflow-hidden">
+                        <p id="currentDayNameDisplay" class="text-[#4e7497] day-name-header flex h-10 w-full items-center justify-center border-b border-r border-slate-200 last:border-r-0">Lu</p>
+                    </div>
+                    <div id="calendarDaysDay" class="grid grid-cols-1 w-full border-b border-l border-r border-slate-200 rounded-b-lg overflow-hidden -mt-px">
+                        </div>
+                </div>
+            </div>
+
+            <h2 id="selectedDayTitle" class="text-[#334155] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Eventos del Día Seleccionado</h2>
+            <div id="selectedDayEventsContainer" class="flex flex-col gap-2 p-2">
+              </div>
+
+            <h2 id="monthEventsTitle" class="text-[#334155] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5 hidden">Eventos del Mes</h2>
+            <div id="monthEventsContainer" class="flex flex-col gap-2 p-2 hidden">
+            </div>
+
+            <h2 id="weekEventsTitle" class="text-[#334155] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5 hidden">Eventos de la Semana</h2>
+            <div id="weekEventsContainer" class="flex flex-col gap-2 p-2 hidden">
+            </div>
+
+          </div>
+
+          <div id="tasks-section" class="layout-content-container flex-col max-w-[960px] flex-1 hidden bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-[#334155] text-3xl font-bold leading-tight tracking-[-0.015em] mb-4">Mis Tareas</h2>
+            <p class="text-[#4e7497] text-base font-normal leading-normal mb-6">Aquí puedes gestionar tus tareas pendientes. ¡Vamos a completarlas!</p>
+            <button id="showAddTaskModalBtn" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#A3D9E9] text-[#334155] shadow-md hover:bg-[#8CD0E4] transition-colors">Añadir Nueva Tarea</button>
+            
+            <!-- Success Message Display (moved here for inline visibility) -->
+            <div id="successMessage" class="mt-4 mx-auto p-3 hidden w-fit">
+                <div class="bg-green-100 text-green-800 px-6 py-3 rounded-full shadow-lg flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-8.63"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <span>¡Guardado con éxito!</span>
+                </div>
+            </div>
+
+            <!-- Add Task Form Container (now inline) -->
+            <div id="addTaskFormContainer" class="mt-6 p-4 border border-gray-200 rounded-xl bg-gray-50 hidden">
+              <h3 class="text-xl font-bold text-[#334155] mb-4">Añadir Nueva Tarea</h3>
+              <form id="taskForm" class="space-y-4">
+                  <div class="relative">
+                      <label for="taskDate" class="block text-sm font-medium text-[#334155]">Fecha:</label>
+                      <input type="text" id="taskDate" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-10 px-3 py-2 cursor-pointer">
+                      <!-- Mini calendar for date picker -->
+                      <div id="datePickerCalendar" class="absolute bg-white border border-gray-300 rounded-lg shadow-lg z-10 p-2 mt-1 hidden">
+                          <div class="flex items-center justify-between mb-2">
+                              <button type="button" id="prevDatePickerMonth" class="text-[#334155] p-1 rounded-full hover:bg-gray-100">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256"><path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"></path></svg>
+                              </button>
+                              <span id="datePickerMonthDisplay" class="font-bold text-[#334155]"></span>
+                              <button type="button" id="nextDatePickerMonth" class="text-[#334155] p-1 rounded-full hover:bg-gray-100">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path></svg>
+                              </button>
+                          </div>
+                          <div class="grid grid-cols-7 text-center text-xs font-semibold text-gray-500 mb-1">
+                              <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span><span>Do</span>
+                          </div>
+                          <div id="datePickerDays" class="grid grid-cols-7 gap-0.5 text-sm">
+                              <!-- Days will be populated by JS -->
+                          </div>
+                      </div>
+                  </div>
+                  <div>
+                      <label for="taskTitle" class="block text-sm font-medium text-[#334155]">Tarea:</label>
+                      <input type="text" id="taskTitle" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-10 px-3 py-2">
+                  </div>
+                  <div>
+                      <label for="taskDescription" class="block text-sm font-medium text-[#334155]">Descripción (Opcional):</label>
+                      <textarea id="taskDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 px-3 py-2"></textarea>
+                  </div>
+                  <div class="flex space-x-4">
+                      <label class="flex items-center text-sm font-medium text-[#334155]">
+                          <input type="checkbox" id="taskTypeIndividual" value="Individual" class="rounded text-blue-600 focus:ring-blue-500">
+                          <span class="ml-2">Individual</span>
+                      </label>
+                      <label class="flex items-center text-sm font-medium text-[#334155]">
+                          <input type="checkbox" id="taskTypeGroup" value="Grupal" class="rounded text-blue-600 focus:ring-blue-500">
+                          <span class="ml-2">Grupal</span>
+                      </label>
+                  </div>
+                  <div class="flex justify-end space-x-3">
+                      <button type="button" id="cancelAddTask" class="px-4 py-2 rounded-lg text-sm font-semibold bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors">Cancelar</button>
+                      <button type="submit" id="saveTask" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#6A8EEB] text-white hover:bg-[#5a7ddc] transition-colors">Guardar Tarea</button>
+                  </div>
+              </form>
+            </div>
+
+            <div class="mt-4 border-t border-slate-200 pt-4">
+              <!-- Removed "Lista de tareas..." text as requested -->
+            </div>
+          </div>
+
+          <div id="assignments-section" class="layout-content-container flex-col max-w-[960px] flex-1 hidden bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-[#334155] text-3xl font-bold leading-tight tracking-[-0.015em] mb-4">Mis Trabajos Prácticos</h2>
+            <p class="text-[#4e7497] text-base font-normal leading-normal mb-6">Consulta el estado de tus trabajos prácticos y sube tus archivos.</p>
+            <button id="showAddAssignmentModalBtn" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#C3E6CB] text-[#334155] shadow-md hover:bg-[#ADD6B9] transition-colors">Añadir Nuevo Trabajo Práctico</button>
+
+            <!-- Success Message Display for Assignments -->
+            <div id="assignmentSuccessMessage" class="mt-4 mx-auto p-3 hidden w-fit">
+                <div class="bg-green-100 text-green-800 px-6 py-3 rounded-full shadow-lg flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-8.63"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <span>¡Trabajo Práctico guardado con éxito!</span>
+                </div>
+            </div>
+
+            <!-- Add Assignment Form Container (inline) -->
+            <div id="addAssignmentFormContainer" class="mt-6 p-4 border border-gray-200 rounded-xl bg-gray-50 hidden">
+                <h3 class="text-xl font-bold text-[#334155] mb-4">Añadir Nuevo Trabajo Práctico</h3>
+                <form id="assignmentForm" class="space-y-4">
+                    <div class="relative">
+                        <label for="assignmentDate" class="block text-sm font-medium text-[#334155]">Fecha:</label>
+                        <input type="text" id="assignmentDate" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-10 px-3 py-2 cursor-pointer">
+                        <!-- Mini calendar for date picker (reusing datePickerCalendar for common logic) -->
+                        <div id="datePickerCalendarAssignment" class="absolute bg-white border border-gray-300 rounded-lg shadow-lg z-10 p-2 mt-1 hidden">
+                            <div class="flex items-center justify-between mb-2">
+                                <button type="button" id="prevDatePickerMonthAssignment" class="text-[#334155] p-1 rounded-full hover:bg-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256"><path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"></path></svg>
+                                </button>
+                                <span id="datePickerMonthDisplayAssignment" class="font-bold text-[#334155]"></span>
+                                <button type="button" id="nextDatePickerMonthAssignment" class="text-[#334155] p-1 rounded-full hover:bg-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path></svg>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-7 text-center text-xs font-semibold text-gray-500 mb-1">
+                                <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span><span>Do</span>
+                            </div>
+                            <div id="datePickerDaysAssignment" class="grid grid-cols-7 gap-0.5 text-sm">
+                                <!-- Days will be populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="assignmentTitle" class="block text-sm font-medium text-[#334155]">Trabajo Práctico:</label>
+                        <input type="text" id="assignmentTitle" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-10 px-3 py-2">
+                    </div>
+                    <div>
+                        <label for="assignmentDescription" class="block text-sm font-medium text-[#334155]">Descripción (Opcional):</label>
+                        <textarea id="assignmentDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 px-3 py-2"></textarea>
+                    </div>
+                    <div class="flex space-x-4">
+                        <label class="flex items-center text-sm font-medium text-[#334155]">
+                            <input type="checkbox" id="assignmentTypeIndividual" value="Individual" class="rounded text-blue-600 focus:ring-blue-500">
+                            <span class="ml-2">Individual</span>
+                        </label>
+                        <label class="flex items-center text-sm font-medium text-[#334155]">
+                            <input type="checkbox" id="assignmentTypeGroup" value="Grupal" class="rounded text-blue-600 focus:ring-blue-500">
+                            <span class="ml-2">Grupal</span>
+                        </label>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancelAddAssignment" class="px-4 py-2 rounded-lg text-sm font-semibold bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors">Cancelar</button>
+                        <button type="submit" id="saveAssignment" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#6A8EEB] text-white hover:bg-[#5a7ddc] transition-colors">Guardar Trabajo Práctico</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mt-4 border-t border-slate-200 pt-4">
+              <p class="text-[#4e7497] italic">Lista de trabajos prácticos...</p>
+            </div>
+          </div>
+
+          <div id="exams-section" class="layout-content-container flex-col max-w-[960px] flex-1 hidden bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-[#334155] text-3xl font-bold leading-tight tracking-[-0.015em] mb-4">Próximos Exámenes</h2>
+            <p class="text-[#4e7497] text-base font-normal leading-normal mb-6">¡Prepárate para tus exámenes con tiempo!</p>
+            <button id="showAddExamModalBtn" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#FFD7A3] text-[#334155] shadow-md hover:bg-[#FFC682] transition-colors">Añadir Nuevo Examen</button>
+            
+            <!-- Success Message Display for Exams -->
+            <div id="examSuccessMessage" class="mt-4 mx-auto p-3 hidden w-fit">
+                <div class="bg-green-100 text-green-800 px-6 py-3 rounded-full shadow-lg flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-8.63"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <span>¡Examen guardado con éxito!</span>
+                </div>
+            </div>
+
+            <!-- Add Exam Form Container (inline) -->
+            <div id="addExamFormContainer" class="mt-6 p-4 border border-gray-200 rounded-xl bg-gray-50 hidden">
+                <h3 class="text-xl font-bold text-[#334155] mb-4">Añadir Nuevo Examen</h3>
+                <form id="examForm" class="space-y-4">
+                    <div class="relative">
+                        <label for="examDate" class="block text-sm font-medium text-[#334155]">Fecha:</label>
+                        <input type="text" id="examDate" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-10 px-3 py-2 cursor-pointer">
+                        <!-- Mini calendar for date picker -->
+                        <div id="datePickerCalendarExam" class="absolute bg-white border border-gray-300 rounded-lg shadow-lg z-10 p-2 mt-1 hidden">
+                            <div class="flex items-center justify-between mb-2">
+                                <button type="button" id="prevDatePickerMonthExam" class="text-[#334155] p-1 rounded-full hover:bg-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256"><path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"></path></svg>
+                                </button>
+                                <span id="datePickerMonthDisplayExam" class="font-bold text-[#334155]"></span>
+                                <button type="button" id="nextDatePickerMonthExam" class="text-[#334155] p-1 rounded-full hover:bg-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path></svg>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-7 text-center text-xs font-semibold text-gray-500 mb-1">
+                                <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span><span>Do</span>
+                            </div>
+                            <div id="datePickerDaysExam" class="grid grid-cols-7 gap-0.5 text-sm">
+                                <!-- Days will be populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="examTitle" class="block text-sm font-medium text-[#334155]">Examen:</label>
+                        <input type="text" id="examTitle" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-10 px-3 py-2">
+                    </div>
+                    <div>
+                        <label for="examDescription" class="block text-sm font-medium text-[#334155]">Descripción (Opcional):</label>
+                        <textarea id="examDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 px-3 py-2"></textarea>
+                    </div>
+                    <div class="flex space-x-4">
+                        <label class="flex items-center text-sm font-medium text-[#334155]">
+                            <input type="checkbox" id="examTypeOral" value="Oral" class="rounded text-blue-600 focus:ring-blue-500">
+                            <span class="ml-2">Oral</span>
+                        </label>
+                        <label class="flex items-center text-sm font-medium text-[#334155]">
+                            <input type="checkbox" id="examTypeWritten" value="Escrito" class="rounded text-blue-600 focus:ring-blue-500">
+                            <span class="ml-2">Escrito</span>
+                        </label>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancelAddExam" class="px-4 py-2 rounded-lg text-sm font-semibold bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors">Cancelar</button>
+                        <button type="submit" id="saveExam" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#6A8EEB] text-white hover:bg-[#5a7ddc] transition-colors">Guardar Examen</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mt-4 border-t border-slate-200 pt-4">
+              <p class="text-[#4e7497] italic">Lista de exámenes...</p>
+            </div>
+          </div>
+
+          <!-- Nueva Sección de Eventos -->
+          <div id="events-section" class="layout-content-container flex-col max-w-[960px] flex-1 hidden bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-[#334155] text-3xl font-bold leading-tight tracking-[-0.015em] mb-4">Mis Eventos</h2>
+            <p class="text-[#4e7497] text-base font-normal leading-normal mb-6">Organiza tus eventos personales y académicos.</p>
+            <button id="showAddEventModalBtn" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#E0BBE4] text-[#334155] shadow-md hover:bg-[#D0A9D6] transition-colors">Añadir Nuevo Evento</button>
+            
+            <!-- Success Message Display for Events -->
+            <div id="eventSuccessMessage" class="mt-4 mx-auto p-3 hidden w-fit">
+                <div class="bg-green-100 text-green-800 px-6 py-3 rounded-full shadow-lg flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-8.63"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <span>¡Evento guardado con éxito!</span>
+                </div>
+            </div>
+
+            <!-- Add Event Form Container (inline) -->
+            <div id="addEventFormContainer" class="mt-6 p-4 border border-gray-200 rounded-xl bg-gray-50 hidden">
+                <h3 class="text-xl font-bold text-[#334155] mb-4">Añadir Nuevo Evento</h3>
+                <form id="eventForm" class="space-y-4">
+                    <div class="relative">
+                        <label for="eventDate" class="block text-sm font-medium text-[#334155]">Fecha:</label>
+                        <input type="text" id="eventDate" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-10 px-3 py-2 cursor-pointer">
+                        <!-- Mini calendar for date picker -->
+                        <div id="datePickerCalendarEvent" class="absolute bg-white border border-gray-300 rounded-lg shadow-lg z-10 p-2 mt-1 hidden">
+                            <div class="flex items-center justify-between mb-2">
+                                <button type="button" id="prevDatePickerMonthEvent" class="text-[#334155] p-1 rounded-full hover:bg-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256"><path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"></path></svg>
+                                </button>
+                                <span id="datePickerMonthDisplayEvent" class="font-bold text-[#334155]"></span>
+                                <button type="button" id="nextDatePickerMonthEvent" class="text-[#334155] p-1 rounded-full hover:bg-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path></svg>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-7 text-center text-xs font-semibold text-gray-500 mb-1">
+                                <span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span><span>Do</span>
+                            </div>
+                            <div id="datePickerDaysEvent" class="grid grid-cols-7 gap-0.5 text-sm">
+                                <!-- Days will be populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="eventTitle" class="block text-sm font-medium text-[#334155]">Evento:</label>
+                        <input type="text" id="eventTitle" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-10 px-3 py-2">
+                    </div>
+                    <div>
+                        <label for="eventDescription" class="block text-sm font-medium text-[#334155]">Descripción (Opcional):</label>
+                        <textarea id="eventDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 px-3 py-2"></textarea>
+                    </div>
+                    <div class="flex space-x-4">
+                        <label class="flex items-center text-sm font-medium text-[#334155]">
+                            <input type="checkbox" id="eventTypePersonal" value="Personal" class="rounded text-blue-600 focus:ring-blue-500">
+                            <span class="ml-2">Personal</span>
+                        </label>
+                        <label class="flex items-center text-sm font-medium text-[#334155]">
+                            <input type="checkbox" id="eventTypeAcademic" value="Académico" class="rounded text-blue-600 focus:ring-blue-500">
+                            <span class="ml-2">Académico</span>
+                        </label>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" id="cancelAddEvent" class="px-4 py-2 rounded-lg text-sm font-semibold bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors">Cancelar</button>
+                        <button type="submit" id="saveEvent" class="px-4 py-2 rounded-lg text-sm font-semibold bg-[#6A8EEB] text-white hover:bg-[#5a7ddc] transition-colors">Guardar Evento</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mt-4 border-t border-slate-200 pt-4">
+              <p class="text-[#4e7497] italic">Lista de eventos...</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      // Importar módulos de Firebase
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+      import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+      // Variables globales de Firebase
+      let app;
+      let db;
+      let auth;
+      let userId = null;
+      let appId = null; 
+      let userEvents = []; // Array para almacenar los eventos del usuario cargados desde Firestore
+
+      // Current date for main calendar views
+      let currentMonth = new Date().getMonth();
+      let currentYear = new Date().getFullYear();
+      let selectedDay = new Date(); // Initially select today's date
+      const today = new Date(); // Get today's date for highlighting
+      let currentWeekStartDate = getMonday(today); // Start of the current week (Monday)
+
+      // Date picker state variables for task form (encapsulated)
+      let taskDatePickerState = {
+          currentMonth: new Date().getMonth(),
+          currentYear: new Date().getFullYear(),
+          selectedDay: null // Stores the selected day for the task date picker
+      };
+
+      // Date picker state variables for assignment form (encapsulated)
+      let assignmentDatePickerState = {
+          currentMonth: new Date().getMonth(),
+          currentYear: new Date().getFullYear(),
+          selectedDay: null // Stores the selected day for the assignment date picker
+      };
+
+      // Date picker state variables for exam form (encapsulated)
+      let examDatePickerState = {
+          currentMonth: new Date().getMonth(),
+          currentYear: new Date().getFullYear(),
+          selectedDay: null // Stores the selected day for the exam date picker
+      };
+
+      // Date picker state variables for event form (encapsulated) - NEW
+      let eventDatePickerState = {
+          currentMonth: new Date().getMonth(),
+          currentYear: new Date().getFullYear(),
+          selectedDay: null // Stores the selected day for the event date picker
+      };
+
+
+      // DOM elements (declared globally for event listeners and initial setup)
+      let monthDisplay;
+      let calendarDaysMonth;
+      let prevMonthBtn;
+      let nextMonthBtn;
+
+      let weekDisplay;
+      let calendarDaysWeek;
+      let prevWeekBtn;
+      let nextWeekBtn;
+
+      let dayDisplay;
+      let currentDayNameDisplay;
+      let calendarDaysDay;
+      let prevDayBtn;
+      let nextDayBtn;
+
+      let upcomingEventsContainer;
+      let selectedDayEventsContainer;
+      let selectedDayTitle;
+      let navLinks;
+      let sections;
+      let calendarViewButtons;
+      let monthEventsTitle; 
+      let monthEventsContainer; 
+      let weekEventsTitle;  
+      let weekEventsContainer; 
+
+      // Task Form DOM elements
+      let addTaskFormContainer; 
+      let showAddTaskModalBtn;
+      let cancelAddTaskBtn;
+      let saveTaskBtn;
+      let taskForm;
+      let taskDateInput;
+      let taskTitleInput;
+      let taskDescriptionInput;
+      let taskTypeIndividualCheckbox;
+      let taskTypeGroupCheckbox;
+      let datePickerCalendar; // Task specific date picker calendar element
+      let datePickerMonthDisplay; // Task specific
+      let datePickerDays; // Task specific
+      let prevDatePickerMonthBtn; // Task specific
+      let nextDatePickerMonthBtn; // Task specific
+
+      // Assignment Form DOM elements
+      let addAssignmentFormContainer;
+      let showAddAssignmentModalBtn;
+      let cancelAddAssignmentBtn;
+      let saveAssignmentBtn;
+      let assignmentForm;
+      let assignmentDateInput;
+      let assignmentTitleInput; 
+      let assignmentDescriptionInput;
+      let assignmentTypeIndividualCheckbox;
+      let assignmentTypeGroupCheckbox;
+      let datePickerCalendarAssignment; // Assignment specific date picker calendar element
+      let datePickerMonthDisplayAssignment; // Assignment specific
+      let datePickerDaysAssignment; // Assignment specific
+      let prevDatePickerMonthAssignmentBtn; // Assignment specific
+      let nextDatePickerMonthAssignmentBtn; // Assignment specific
+
+      // Exam Form DOM elements
+      let addExamFormContainer;
+      let showAddExamModalBtn;
+      let cancelAddExamBtn;
+      let saveExamBtn;
+      let examForm;
+      let examDateInput;
+      let examTitleInput; 
+      let examDescriptionInput;
+      let examTypeOralCheckbox;
+      let examTypeWrittenCheckbox;
+      let datePickerCalendarExam; // Exam specific date picker calendar element
+      let datePickerMonthDisplayExam; // Exam specific
+      let datePickerDaysExam; // Specific to exam form
+      let prevDatePickerMonthExamBtn; // Exam specific
+      let nextDatePickerMonthExamBtn; // Exam specific
+
+      // Event Form DOM elements - NEW
+      let addEventFormContainer;
+      let showAddEventModalBtn;
+      let cancelAddEventBtn;
+      let saveEventBtn;
+      let eventForm;
+      let eventDateInput;
+      let eventTitleInput;
+      let eventDescriptionInput;
+      let eventTypePersonalCheckbox;
+      let eventTypeAcademicCheckbox;
+      let datePickerCalendarEvent; // Event specific date picker calendar element
+      let datePickerMonthDisplayEvent; // Event specific
+      let datePickerDaysEvent; // Specific to event form
+      let prevDatePickerMonthEventBtn; // Event specific
+      let nextDatePickerMonthEventBtn; // Event specific
+      let eventSuccessMessage; // For events
+
+
+      let successMessage; // Refers to the inline success message (for tasks)
+      let assignmentSuccessMessage; // For assignments
+      let examSuccessMessage; // For exams
+
+      // Icon mapping 
+      const iconSVG = {
+        BookOpen: `<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H160a40,40,0,0,0-32,16A40,40,0,0,0,96,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H96a24,24,0,0,1,24,24,8,8,0,0,0,16,0,24,24,0,0,1,24-24h64a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48ZM96,192H32V64H96a24,24,0,0,1,24,24V200A39.81,39.81,0,0,0,96,192Zm128,0H160a39.81,39.81,0,0,0-24,8V88a24,24,0,0,1,24-24h64Z"></path></svg>`,
+        TestTube: `<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256"><path d="M237.66,86.34l-60-60a8,8,0,0,0-11.32,0L37.11,155.57a44.77,44.77,0,0,0,63.32,63.32L212.32,107l22.21-7.4a8,8,0,0,0,3.13-13.25ZM89.11,207.57a28.77,28.77,0,0,1-40.68-40.68l28.8-28.8c8.47-2.9,21.75-4,39.07,5,10.6,5.54,20.18,8,28.56,8.73ZM205.47,92.41a8,8,0,0,0-3.13,1.93l-39.57,39.57c-8.47,2.9-21.75,4-39.07-5-10.6-5.54-20.18-8-28.56-8.73L172,43.31,217.19,88.5Z"></path></svg>`,
+        Flask: `<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256"><path d="M221.69,199.77,160,96.92V40h8a8,8,0,0,0,0-16H88a8,8,0,0,0,0,16h8V96.92L34.31,199.77A16,16,0,0,0,48,224H208a16,16,0,0,0,13.72-24.23ZM110.86,103.25A7.93,7.930,0,0,0,112,99.14V40h32V99.14a7.93,7.93,0,0,0,1.14,4.11L183.36,167c-12,2.37-29.07,1.37-51.75-10.11-15.91-8.05-31.05-12.32-45.22-12.81ZM48,208l28.54-47.58c14.25-1.74,30.31,1.85,47.82,10.72,19,9.61,35,12.88,48,12.88a69.89,69.89,0,0,0,19.55-2.7L208,208Z"></path></svg>`,
+        Users: `<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256"><path d="M232,120H216V96a40,40,0,0,0-40-40H80A40,40,0,0,0,40,96v24H24a8,8,0,0,0,0,16H40v24a40,40,0,0,0,40,40h96a40,40,0,0,0,40-40V136h16a8,8,0,0,0,0-16ZM56,96a24,24,0,0,1,24-24h96a24,24,0,0,1,24,24v24H56ZM200,160a24,24,0,0,1-24,24H80a24,24,0,0,1-24-24V136H200Z"></path></svg>`,
+        Presentation: `<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256"><path d="M224,40H32a16,16,0,0,0-16,16V200a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V56A16,16,0,0,0,224,40Zm0,16V176H32V56ZM128,144a8,8,0,0,1-8-8V88a8,8,0,0,1,16,0v48A8,8,0,0,1,128,144Zm-32,0a8,8,0,0,1-8-8V88a8,8,0,0,1,16,0v48A8,8,0,0,1,96,144Zm64,0a8,8,0,0,1-8-8V88a8,8,0,0,1,16,0v48A8,8,0,0,1,160,144Z"></path></svg>`,
+        Chat: `<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256"><path d="M232,120A104,104,0,0,1,45.25,200.41L24.89,215a8,8,0,0,0-.73,11.39A8,8,0,0,0,32,232a8,8,0,0,0,5.65-2.34l20.4-20.4a104,104,0,1,0,163.92-89.26ZM128,216a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z"></path></svg>`
+      };
+
+      // Function to get event-specific background color (no dark mode classes in this version)
+      function getEventBackgroundColor(eventType) {
+        switch (eventType) {
+          case 'task':
+            return 'bg-[#A3D9E9]'; // Light cyan/blue for tasks
+          case 'exam':
+            return 'bg-[#FFD7A3]'; // Light orange/peach for exams
+          case 'assignment':
+            return 'bg-[#C3E6CB]'; // Light green for assignments/projects
+          case 'other':
+          default:
+            return 'bg-[#E0BBE4]'; // Light purple for general/other events
+        }
+      }
+
+      /**
+       * Helper function to compare dates by year, month, and day.
+       * @param {Date} d1 - First date object.
+       * @param {Date} d2 - Second date object.
+       * @returns {boolean} True if dates are the same (day, month, year), false otherwise.
+       */
+      function isSameDay(d1, d2) {
+          return d1.getFullYear() === d2.getFullYear() &&
+                 d1.getMonth() === d2.getMonth() &&
+                 d1.getDate() === d2.getDate();
+      }
+
+      /**
+       * Renders the monthly calendar view.
+       */
+      function renderMonthCalendar() {
+        // Get DOM elements locally to ensure they are available
+        const monthDisplay = document.getElementById('monthDisplay');
+        const calendarDaysMonth = document.getElementById('calendarDaysMonth');
+        if (!monthDisplay || !calendarDaysMonth) {
+            console.error("Month calendar DOM elements not found.");
+            return;
+        }
+
+        calendarDaysMonth.innerHTML = ''; // Clear previous days
+
+        const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        const monthNames = [
+          "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        ];
+        monthDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+        // Calculate startDayOffset for Monday-first calendar
+        let startDayOffset = firstDayOfMonth.getDay();
+        if (startDayOffset === 0) { // If it's Sunday
+            startDayOffset = 6; 
+        } else {
+            startDayOffset--; 
+        }
+
+        for (let i = 0; i < startDayOffset; i++) {
+          const emptyDiv = document.createElement('div');
+          // Removed last:border-r-0 as it caused issues for cells in the last row that are also the last child
+          emptyDiv.classList.add('h-12', 'w-full', 'border-b', 'border-r', 'border-slate-200'); 
+          calendarDaysMonth.appendChild(emptyDiv);
+        }
+
+        // Fill days of the month
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dayButton = document.createElement('button');
+          dayButton.classList.add(
+            'h-12', 'w-full', 'text-sm', 'font-medium', 'leading-normal',
+            'border-b', 'border-r', 'border-slate-200', 
+            'hover:bg-slate-100', 'transition-colors', 'relative' 
+          );
+          // Ensure data-date is alwaysYYYY-MM-DD
+          const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          dayButton.setAttribute('data-date', dateString);
+          dayButton.innerHTML = `<div class="flex size-full items-center justify-center rounded-full">${day}</div>`;
+          calendarDaysMonth.appendChild(dayButton);
+
+          const dayNumberDiv = dayButton.querySelector('div');
+          // Create a new Date object from the year, month, and day to avoid timezone issues
+          const currentDayFullDate = new Date(currentYear, currentMonth, day);
+
+          applyDayStyling(dayNumberDiv, currentDayFullDate);
+
+          const eventsOnThisDay = userEvents.filter(event =>
+            isSameDay(new Date(event.date), currentDayFullDate)
+          );
+
+          if (eventsOnThisDay.length > 0) {
+            const eventDotContainer = document.createElement('div');
+            eventDotContainer.classList.add('absolute', 'bottom-1', 'left-1/2', '-translate-x-1/2', 'flex', 'gap-1');
+            
+            eventsOnThisDay.slice(0, 3).forEach(event => {
+                const eventDot = document.createElement('span');
+                eventDot.classList.add('size-2', 'rounded-full', getEventBackgroundColor(event.type).split(' ')[0]); // Only take bg color class
+                eventDotContainer.appendChild(eventDot);
+            });
+            dayButton.appendChild(eventDotContainer);
+          }
+
+          dayButton.addEventListener('click', (event) => {
+            handleDayClick(event.currentTarget);
+          });
+        }
+      }
+
+      /**
+       * Helper function to get the Monday of a given date's week.
+       * @param {Date} date - The date to find the Monday for.
+       * @returns {Date} The Monday of the week.
+       */
+      function getMonday(date) {
+        const d = new Date(date);
+        const day = d.getDay(); 
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1); 
+        return new Date(d.getFullYear(), d.getMonth(), diff);
+      }
+
+      /**
+       * Renders the weekly calendar view.
+       */
+      function renderWeekCalendar() {
+        // Get DOM elements locally to ensure they are available
+        const weekDisplay = document.getElementById('weekDisplay');
+        const calendarDaysWeek = document.getElementById('calendarDaysWeek');
+        if (!weekDisplay || !calendarDaysWeek) {
+            console.error("Week calendar DOM elements not found.");
+            return;
+        }
+
+        calendarDaysWeek.innerHTML = ''; // Clear previous days
+
+        const startOfWeek = getMonday(currentWeekStartDate);
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday of the week
+
+        weekDisplay.textContent = `${startOfWeek.getDate()} de ${startOfWeek.toLocaleString('es-ES', { month: 'short' })} - ${endOfWeek.getDate()} de ${endOfWeek.toLocaleString('es-ES', { month: 'short' })} ${endOfWeek.getFullYear()}`;
+
+
+        for (let i = 0; i < 7; i++) {
+          const currentDay = new Date(startOfWeek);
+          currentDay.setDate(startOfWeek.getDate() + i);
+
+          const dayButton = document.createElement('button');
+          dayButton.classList.add(
+            'h-[86px]', 'w-full', 'text-[#334155]', 'text-sm', 'font-medium', 'leading-normal',
+            'border-b', 'border-r', 'border-slate-200', 
+            'hover:bg-slate-100', 'transition-colors', 'relative', 'flex', 'flex-col', 'items-center', 'justify-start', 'pt-2' 
+          );
+          // Ensure data-date is alwaysYYYY-MM-DD
+          const dateString = `${currentDay.getFullYear()}-${String(currentDay.getMonth() + 1).padStart(2, '0')}-${String(currentDay.getDate()).padStart(2, '0')}`;
+          dayButton.setAttribute('data-date', dateString);
+          dayButton.innerHTML = `<div class="flex size-8 items-center justify-center rounded-full">${currentDay.getDate()}</div>`;
+          calendarDaysWeek.appendChild(dayButton);
+
+          const dayNumberDiv = dayButton.querySelector('div');
+          
+          applyDayStyling(dayNumberDiv, currentDay);
+
+          const eventsOnThisDay = userEvents.filter(event =>
+            isSameDay(new Date(event.date), currentDay)
+          );
+
+          if (eventsOnThisDay.length > 0) {
+            const eventDotContainer = document.createElement('div');
+            eventDotContainer.classList.add('flex', 'gap-1', 'mt-1'); 
+            
+            eventsOnThisDay.slice(0, 3).forEach(event => {
+                const eventDot = document.createElement('span');
+                eventDot.classList.add('size-2', 'rounded-full', getEventBackgroundColor(event.type).split(' ')[0]); // Only take bg color class
+                eventDotContainer.appendChild(eventDot);
+            });
+            dayButton.appendChild(eventDotContainer);
+          }
+
+          calendarDaysWeek.appendChild(dayButton);
+
+          dayButton.addEventListener('click', (event) => {
+            handleDayClick(event.currentTarget);
+          });
+        }
+      }
+
+      /**
+       * Renders the daily calendar view.
+       */
+      function renderDayCalendar() {
+        // Get DOM elements locally to ensure they are available
+        const dayDisplay = document.getElementById('dayDisplay');
+        const currentDayNameDisplay = document.getElementById('currentDayNameDisplay');
+        const calendarDaysDay = document.getElementById('calendarDaysDay');
+        if (!dayDisplay || !currentDayNameDisplay || !calendarDaysDay) {
+            console.error("Day calendar DOM elements not found.");
+            return;
+        }
+
+        calendarDaysDay.innerHTML = ''; // Clear previous days
+
+        dayDisplay.textContent = `${selectedDay.getDate()} de ${selectedDay.toLocaleString('es-ES', { month: 'long' })} ${selectedDay.getFullYear()}`;
+        currentDayNameDisplay.textContent = selectedDay.toLocaleString('es-ES', { weekday: 'short' }).substring(0, 2).toUpperCase();
+
+
+        const dayButton = document.createElement('button');
+        dayButton.classList.add(
+          'h-[86px]', 'w-full', 'text-[#334155]', 'text-sm', 'font-medium', 'leading-normal',
+          'border-b', 'border-r', 'border-slate-200', 
+          'hover:bg-slate-100', 'transition-colors', 'relative', 'flex', 'flex-col', 'items-center', 'justify-start', 'pt-2' 
+        );
+          // Ensure data-date is alwaysYYYY-MM-DD
+          const dateString = `${selectedDay.getFullYear()}-${String(selectedDay.getMonth() + 1).padStart(2, '0')}-${String(selectedDay.getDate()).padStart(2, '0')}`;
+          dayButton.setAttribute('data-date', dateString);
+          dayButton.innerHTML = `<div class="flex size-8 items-center justify-center rounded-full">${selectedDay.getDate()}</div>`;
+          calendarDaysDay.appendChild(dayButton);
+
+          const dayNumberDiv = dayButton.querySelector('div');
+          applyDayStyling(dayNumberDiv, selectedDay);
+
+          const eventsOnThisDay = userEvents.filter(event =>
+            isSameDay(new Date(event.date), selectedDay)
+          );
+
+          if (eventsOnThisDay.length > 0) {
+            const eventDotContainer = document.createElement('div');
+            eventDotContainer.classList.add('flex', 'gap-1', 'mt-1'); 
+            
+            eventsOnThisDay.slice(0, 3).forEach(event => {
+                const eventDot = document.createElement('span');
+                eventDot.classList.add('size-2', 'rounded-full', getEventBackgroundColor(event.type).split(' ')[0]); // Only take bg color class
+                eventDotContainer.appendChild(eventDot);
+            });
+            dayButton.appendChild(eventDotContainer);
+          }
+
+          dayButton.addEventListener('click', (event) => {
+            handleDayClick(event.currentTarget);
+          });
+      }
+
+      /**
+       * Applies the correct styling to a day element based on its state.
+       * @param {Date} dayDiv - The div element representing the day number.
+       * @param {Date} dayDate - The actual date object for this day.
+       */
+      function applyDayStyling(dayDiv, dayDate) {
+        // Clear all previous styling classes related to selection/today/default
+        dayDiv.classList.remove('selected-day-bg', 'text-white', 'font-bold', 'text-[#334155]', 'text-black');
+        
+        const isTodayDay = isSameDay(dayDate, today);
+        const isSelectedDay = isSameDay(dayDate, selectedDay);
+
+        if (isSelectedDay) {
+            dayDiv.classList.add('selected-day-bg', 'text-black', 'font-bold'); 
+        } else if (isTodayDay) {
+            dayDiv.classList.add('text-black', 'font-bold'); 
+        } else {
+            dayDiv.classList.add('text-[#334155]'); // Default text color
+        }
+      }
+
+
+      /**
+       * Handles the click event on a calendar day button.
+       * @param {HTMLElement} clickedButton - The button element that was clicked.
+       */
+      function handleDayClick(clickedButton) {
+        // Parse the date string from data-date to create a clean Date object for comparison
+        const dateParts = clickedButton.getAttribute('data-date').split('-');
+        const year = parseInt(dateParts[0]);
+        const month = parseInt(dateParts[1]) - 1; // Months are 0-indexed
+        const day = parseInt(dateParts[2]);
+        // Create new Date objects by specifying components to avoid timezone issues with string parsing
+        const newSelectedDate = new Date(year, month, day);
+
+
+        // Only update if a different day is clicked
+        if (!isSameDay(selectedDay, newSelectedDate)) {
+            selectedDay = newSelectedDate;
+
+            // Update currentMonth and currentYear based on new selectedDay
+            currentMonth = selectedDay.getMonth();
+            currentYear = selectedDay.getFullYear();
+            // Update currentWeekStartDate based on new selectedDay
+            currentWeekStartDate = getMonday(selectedDay);
+
+
+            // Re-render all calendars to ensure all styles are correctly updated
+            renderMonthCalendar(); 
+            renderWeekCalendar(); 
+            renderDayCalendar(); // Re-render day calendar when selectedDay changes
+
+            renderDayEvents(selectedDay); // Update events for the new selected day
+            // Also update month/week events if those containers are visible
+            if (monthEventsContainer && !monthEventsContainer.classList.contains('hidden')) {
+              renderMonthEvents();
+            }
+            if (weekEventsContainer && !weekEventsContainer.classList.contains('hidden')) {
+              renderWeekEvents();
+            }
+        }
+      }
+
+
+      // Function to render events for a specific container (e.g., upcoming, month, week)
+      function renderEventsInContainer(containerElement, eventsList, titleElement, noEventsMessage, filterType) {
+          containerElement.innerHTML = '';
+          if (titleElement) {
+            titleElement.classList.remove('hidden');
+          }
+          // Ensure the container itself is visible
+          if (containerElement) { // Check if containerElement exists
+              containerElement.classList.remove('hidden');
+          }
+
+
+          let filteredEvents = [];
+          const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+          if (filterType === 'upcoming') {
+              filteredEvents = eventsList.filter(event => new Date(event.date) >= todayStart);
+          } else if (filterType === 'month') {
+              filteredEvents = eventsList.filter(event => 
+                  new Date(event.date).getMonth() === currentMonth && new Date(event.date).getFullYear() === currentYear
+              );
+          } else if (filterType === 'week') {
+              const startOfWeekNormalized = new Date(currentWeekStartDate.getFullYear(), currentWeekStartDate.getMonth(), currentWeekStartDate.getDate(), 0, 0, 0);
+              const endOfWeekNormalized = new Date(currentWeekStartDate.getFullYear(), currentWeekStartDate.getMonth(), currentWeekStartDate.getDate() + 6, 23, 59, 59, 999);
+
+              filteredEvents = eventsList.filter(event =>
+                  new Date(event.date) >= startOfWeekNormalized && new Date(event.date) <= endOfWeekNormalized
+              );
+          }
+          // Sort events by date
+          filteredEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+          if (filteredEvents.length === 0) {
+              containerElement.innerHTML = `<p class="text-[#4e7497] text-base font-normal leading-normal px-4 py-2">${noEventsMessage}</p>`;
+              return;
+          }
+
+          filteredEvents.forEach(event => {
+              const eventDate = new Date(event.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+              const eventHtml = `
+                  <div class="flex items-center gap-4 ${getEventBackgroundColor(event.type)} text-[#334155] px-4 min-h-[72px] py-2 justify-between rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                      <div class="flex items-center justify-center rounded-lg bg-white bg-opacity-75 shrink-0 size-12 text-[#334155]">
+                              ${iconSVG[event.icon] || ''}
+                          </div>
+                          <div class="flex flex-col justify-center">
+                              <p class="text-base font-medium leading-normal line-clamp-1">${event.name}</p>
+                              <p class="text-sm font-normal leading-normal line-clamp-2">${event.subject}</p>
+                          </div>
+                      </div>
+                      <div class="shrink-0"><p class="text-sm font-normal leading-normal">${eventDate}</p></div>
+                  </div>
+              `;
+              containerElement.insertAdjacentHTML('beforeend', eventHtml);
+          });
+      }
+
+
+      // Function to render upcoming events (all events from today onwards)
+      function renderUpcomingEvents() {
+        if (!upcomingEventsContainer) {
+            console.error("Upcoming events container not found.");
+            return;
+        }
+        renderEventsInContainer(upcomingEventsContainer, userEvents, null, "No hay eventos próximos.", "upcoming");
+      }
+
+      // Function to render events for a specific selected day
+      function renderDayEvents(date) {
+        if (!selectedDayEventsContainer || !selectedDayTitle) {
+            console.error("Selected day events container or title not found.");
+            return;
+        }
+        selectedDayEventsContainer.innerHTML = ''; // Always clear for specific day events
+
+        const formattedDate = date.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        selectedDayTitle.textContent = `Eventos para el ${formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1)}`;
+
+        const eventsForSelectedDay = userEvents.filter(event =>
+          isSameDay(new Date(event.date), date)
+        ).sort((a, b) => new Date(a.date) - new Date(b.date)); 
+
+        if (eventsForSelectedDay.length === 0) {
+          selectedDayEventsContainer.innerHTML = `
+            <p class="text-[#4e7497] text-base font-normal leading-normal px-4 py-2">No hay eventos para este día.</p>
+          `;
+          return;
+        }
+
+        eventsForSelectedDay.forEach(event => {
+          const eventDate = new Date(event.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+          const eventHtml = `
+            <div class="flex items-center gap-4 ${getEventBackgroundColor(event.type)} text-[#334155] px-4 min-h-[72px] py-2 justify-between rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <div class="flex items-center justify-center rounded-lg bg-white bg-opacity-75 shrink-0 size-12 text-[#334155]">
+                  ${iconSVG[event.icon] || ''}
+                </div>
+                <div class="flex flex-col justify-center">
+                  <p class="text-base font-medium leading-normal line-clamp-1">${event.name}</p>
+                  <p class="text-sm font-normal leading-normal line-clamp-2">${event.subject}</p>
+                </div>
+              </div>
+              <div class="shrink-0"><p class="text-sm font-normal leading-normal">${eventDate}</p></div>
+            </div>
+          `;
+          selectedDayEventsContainer.insertAdjacentHTML('beforeend', eventHtml);
+        });
+      }
+
+      // Function to render all events for the current month
+      function renderMonthEvents() {
+        if (!monthEventsContainer || !monthEventsTitle) {
+            console.error("Month events container or title not found.");
+            return;
+        }
+        renderEventsInContainer(monthEventsContainer, userEvents, monthEventsTitle, "No hay eventos para este mes.", "month");
+      }
+
+      // Function to render all events for the current week
+      function renderWeekEvents() {
+        if (!weekEventsContainer || !weekEventsTitle) {
+            console.error("Week events container or title not found.");
+            return;
+        }
+        renderEventsInContainer(weekEventsContainer, userEvents, weekEventsTitle, "No hay eventos para esta semana.", "week");
+      }
+
+      /**
+       * Renders the date picker calendar for a given form.
+       * @param {HTMLElement} targetDatePickerDays - The container for the day cells.
+       * @param {HTMLElement} targetDatePickerMonthDisplay - The element displaying the month and year.
+       * @param {object} datePickerState - The state object for this specific date picker (e.g., taskDatePickerState).
+       * @param {HTMLElement} targetDateInput - The input field associated with this date picker.
+       */
+      function renderDatePickerCalendar(targetDatePickerDays, targetDatePickerMonthDisplay, datePickerState, targetDateInput) {
+          if (!targetDatePickerDays || !targetDatePickerMonthDisplay) {
+              console.error("Date picker DOM elements not found for current context.");
+              return;
+          }
+
+          targetDatePickerDays.innerHTML = '';
+          const firstDayOfMonth = new Date(datePickerState.currentYear, datePickerState.currentMonth, 1);
+          const daysInMonth = new Date(datePickerState.currentYear, datePickerState.currentMonth + 1, 0).getDate();
+
+          const monthNames = [
+              "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+              "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+          ];
+          targetDatePickerMonthDisplay.textContent = `${monthNames[datePickerState.currentMonth]} ${datePickerState.currentYear}`;
+
+          let startDayOffset = firstDayOfMonth.getDay();
+          if (startDayOffset === 0) {
+              startDayOffset = 6;
+          } else {
+              startDayOffset--;
+          }
+
+          for (let i = 0; i < startDayOffset; i++) {
+              const emptyDiv = document.createElement('div');
+              emptyDiv.classList.add('h-8', 'w-full'); 
+              targetDatePickerDays.appendChild(emptyDiv);
+          }
+
+          for (let day = 1; day <= daysInMonth; day++) {
+              const dayCell = document.createElement('button');
+              dayCell.type = 'button'; 
+              dayCell.classList.add('day-cell', 'text-gray-700', 'hover:bg-blue-100'); 
+              dayCell.textContent = day;
+              dayCell.setAttribute('data-date', `${datePickerState.currentYear}-${String(datePickerState.currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
+
+              const cellDate = new Date(datePickerState.currentYear, datePickerState.currentMonth, day);
+
+              // Highlight selected date in date picker
+              if (datePickerState.selectedDay && isSameDay(cellDate, datePickerState.selectedDay)) {
+                  dayCell.classList.add('bg-blue-500', 'text-white');
+              } else if (isSameDay(cellDate, today)) { // Highlight today
+                  dayCell.classList.add('border', 'border-blue-500');
+              }
+
+              dayCell.addEventListener('click', () => {
+                  datePickerState.selectedDay = cellDate; // Update the specific selected day variable
+                  targetDateInput.value = cellDate.toLocaleDateString('es-ES');
+                  // Hide the specific calendar
+                  document.getElementById(targetDatePickerDays.parentElement.id).classList.add('hidden'); 
+                  // Re-render to update selected style
+                  renderDatePickerCalendar(targetDatePickerDays, targetDatePickerMonthDisplay, datePickerState, targetDateInput);
+              });
+              targetDatePickerDays.appendChild(dayCell);
+          }
+      }
+
+
+      // --- Event Listeners for Forms and Date Pickers ---
+      function initializeFormListeners() {
+        // Task Form Elements
+        addTaskFormContainer = document.getElementById('addTaskFormContainer'); 
+        showAddTaskModalBtn = document.getElementById('showAddTaskModalBtn');
+        cancelAddTaskBtn = document.getElementById('cancelAddTask');
+        saveTaskBtn = document.getElementById('saveTask');
+        taskForm = document.getElementById('taskForm');
+        taskDateInput = document.getElementById('taskDate');
+        taskTitleInput = document.getElementById('taskTitle');
+        taskDescriptionInput = document.getElementById('taskDescription');
+        taskTypeIndividualCheckbox = document.getElementById('taskTypeIndividual');
+        taskTypeGroupCheckbox = document.getElementById('taskTypeGroup');
+        datePickerCalendar = document.getElementById('datePickerCalendar'); // Specific to task form
+        datePickerMonthDisplay = document.getElementById('datePickerMonthDisplay'); // Specific to task form
+        datePickerDays = document.getElementById('datePickerDays'); // Specific to task form
+        prevDatePickerMonthBtn = document.getElementById('prevDatePickerMonth'); // Specific to task form
+        nextDatePickerMonthBtn = document.getElementById('nextDatePickerMonth'); // Specific to task form
+        successMessage = document.getElementById('successMessage');
+
+        // Assignment Form Elements
+        addAssignmentFormContainer = document.getElementById('addAssignmentFormContainer');
+        showAddAssignmentModalBtn = document.getElementById('showAddAssignmentModalBtn');
+        cancelAddAssignmentBtn = document.getElementById('cancelAddAssignment');
+        saveAssignmentBtn = document.getElementById('saveAssignment');
+        assignmentForm = document.getElementById('assignmentForm');
+        assignmentDateInput = document.getElementById('assignmentDate');
+        assignmentTitleInput = document.getElementById('assignmentTitle'); 
+        assignmentDescriptionInput = document.getElementById('assignmentDescription');
+        assignmentTypeIndividualCheckbox = document.getElementById('assignmentTypeIndividual');
+        assignmentTypeGroupCheckbox = document.getElementById('assignmentTypeGroup');
+        datePickerCalendarAssignment = document.getElementById('datePickerCalendarAssignment'); // Assignment specific date picker calendar element
+        datePickerMonthDisplayAssignment = document.getElementById('datePickerMonthDisplayAssignment'); // Assignment specific
+        datePickerDaysAssignment = document.getElementById('datePickerDaysAssignment'); // Assignment specific
+        prevDatePickerMonthAssignmentBtn = document.getElementById('prevDatePickerMonthAssignment'); // Assignment specific
+        nextDatePickerMonthAssignmentBtn = document.getElementById('nextDatePickerMonthAssignment'); // Assignment specific
+        assignmentSuccessMessage = document.getElementById('assignmentSuccessMessage');
+
+        // Exam Form DOM elements
+        addExamFormContainer = document.getElementById('addExamFormContainer');
+        showAddExamModalBtn = document.getElementById('showAddExamModalBtn');
+        cancelAddExamBtn = document.getElementById('cancelAddExam');
+        saveExamBtn = document.getElementById('saveExam');
+        examForm = document.getElementById('examForm');
+        examDateInput = document.getElementById('examDate');
+        examTitleInput = document.getElementById('examTitle'); 
+        examDescriptionInput = document.getElementById('examDescription');
+        examTypeOralCheckbox = document.getElementById('examTypeOral');
+        examTypeWrittenCheckbox = document.getElementById('examTypeWritten');
+        datePickerCalendarExam = document.getElementById('datePickerCalendarExam'); // Exam specific date picker calendar element
+        datePickerMonthDisplayExam = document.getElementById('datePickerMonthDisplayExam'); // Exam specific
+        datePickerDaysExam = document.getElementById('datePickerDaysExam'); // Specific to exam form
+        prevDatePickerMonthExamBtn = document.getElementById('prevDatePickerMonthExam'); // Exam specific
+        nextDatePickerMonthExamBtn = document.getElementById('nextDatePickerMonthExam'); // Exam specific
+        examSuccessMessage = document.getElementById('examSuccessMessage');
+
+        // Event Form DOM elements - NEW
+        addEventFormContainer = document.getElementById('addEventFormContainer');
+        showAddEventModalBtn = document.getElementById('showAddEventModalBtn');
+        cancelAddEventBtn = document.getElementById('cancelAddEvent');
+        saveEventBtn = document.getElementById('saveEvent');
+        eventForm = document.getElementById('eventForm');
+        eventDateInput = document.getElementById('eventDate');
+        eventTitleInput = document.getElementById('eventTitle');
+        eventDescriptionInput = document.getElementById('eventDescription');
+        eventTypePersonalCheckbox = document.getElementById('eventTypePersonal');
+        eventTypeAcademicCheckbox = document.getElementById('eventTypeAcademic');
+        datePickerCalendarEvent = document.getElementById('datePickerCalendarEvent'); // Event specific date picker calendar element
+        datePickerMonthDisplayEvent = document.getElementById('datePickerMonthDisplayEvent'); // Event specific
+        datePickerDaysEvent = document.getElementById('datePickerDaysEvent'); // Specific to event form
+        prevDatePickerMonthEventBtn = document.getElementById('prevDatePickerMonthEvent'); // Event specific
+        nextDatePickerMonthEventBtn = document.getElementById('nextDatePickerMonthEvent'); // Event specific
+        eventSuccessMessage = document.getElementById('eventSuccessMessage');
+
+
+        // --- Task Form Listeners ---
+        if (showAddTaskModalBtn) showAddTaskModalBtn.addEventListener('click', () => {
+            if (addTaskFormContainer) addTaskFormContainer.classList.remove('hidden'); 
+            if (addAssignmentFormContainer) addAssignmentFormContainer.classList.add('hidden'); // Hide other forms
+            if (datePickerCalendarAssignment) datePickerCalendarAssignment.classList.add('hidden'); // Hide other date pickers
+            if (addExamFormContainer) addExamFormContainer.classList.add('hidden'); // Hide other forms
+            if (datePickerCalendarExam) datePickerCalendarExam.classList.add('hidden'); // Hide other date pickers
+            if (addEventFormContainer) addEventFormContainer.classList.add('hidden'); // Hide other forms
+            if (datePickerCalendarEvent) datePickerCalendarEvent.classList.add('hidden'); // Hide other date pickers
+
+
+            if (taskForm) taskForm.reset();
+            taskDatePickerState.selectedDay = null; // Reset selected day for this form
+            if (taskDateInput) taskDateInput.value = '';
+            taskDatePickerState.currentMonth = selectedDay.getMonth(); // Set to selected calendar day's month/year
+            taskDatePickerState.currentYear = selectedDay.getFullYear();
+            renderDatePickerCalendar(datePickerDays, datePickerMonthDisplay, taskDatePickerState, taskDateInput);
+        });
+
+        if (cancelAddTaskBtn) cancelAddTaskBtn.addEventListener('click', () => {
+            if (addTaskFormContainer) addTaskFormContainer.classList.add('hidden'); 
+            if (datePickerCalendar) datePickerCalendar.classList.add('hidden'); 
+        });
+
+        if (taskDateInput) taskDateInput.addEventListener('click', (event) => {
+            event.stopPropagation(); 
+            if (datePickerCalendar) {
+                datePickerCalendar.classList.toggle('hidden');
+                if (!datePickerCalendar.classList.contains('hidden')) {
+                     renderDatePickerCalendar(datePickerDays, datePickerMonthDisplay, taskDatePickerState, taskDateInput);
+                }
+            }
+            if (datePickerCalendarAssignment) datePickerCalendarAssignment.classList.add('hidden'); // Hide other date picker
+            if (datePickerCalendarExam) datePickerCalendarExam.classList.add('hidden'); // Hide other date picker
+            if (datePickerCalendarEvent) datePickerCalendarEvent.classList.add('hidden'); // Hide other date picker
+        });
+        
+        if (prevDatePickerMonthBtn) prevDatePickerMonthBtn.addEventListener('click', (event) => {
+            event.stopPropagation(); 
+            taskDatePickerState.currentMonth--;
+            if (taskDatePickerState.currentMonth < 0) {
+                taskDatePickerState.currentMonth = 11;
+                taskDatePickerState.currentYear--;
+            }
+            renderDatePickerCalendar(datePickerDays, datePickerMonthDisplay, taskDatePickerState, taskDateInput);
+        });
+
+        if (nextDatePickerMonthBtn) nextDatePickerMonthBtn.addEventListener('click', (event) => {
+            event.stopPropagation(); 
+            taskDatePickerState.currentMonth++;
+            if (taskDatePickerState.currentMonth > 11) {
+                taskDatePickerState.currentMonth = 0;
+                taskDatePickerState.currentYear++;
+            }
+            renderDatePickerCalendar(datePickerDays, datePickerMonthDisplay, taskDatePickerState, taskDateInput);
+        });
+
+        if (taskTypeIndividualCheckbox) taskTypeIndividualCheckbox.addEventListener('change', () => {
+            if (taskTypeIndividualCheckbox.checked) {
+                if (taskTypeGroupCheckbox) taskTypeGroupCheckbox.checked = false;
+            }
+        });
+
+        if (taskTypeGroupCheckbox) taskTypeGroupCheckbox.addEventListener('change', () => {
+            if (taskTypeGroupCheckbox.checked) {
+                if (taskTypeIndividualCheckbox) taskTypeIndividualCheckbox.checked = false;
+            }
+        });
+
+        if (taskForm) taskForm.addEventListener('submit', async (event) => { // Added async
+            event.preventDefault();
+
+            const titleValue = taskTitleInput.value.trim();
+            const descriptionValue = taskDescriptionInput.value.trim();
+            const isIndividual = taskTypeIndividualCheckbox.checked;
+            const isGroup = taskTypeGroupCheckbox.checked;
+
+            if (!taskDatePickerState.selectedDay) { 
+                showCustomAlert('La Fecha es obligatoria. Por favor, selecciona una fecha del calendario.');
+                return;
+            }
+            if (!titleValue) {
+                showCustomAlert('El Título de la tarea es obligatorio.');
+                return;
+            }
+
+            const newTask = {
+                name: titleValue,
+                subject: descriptionValue || (isIndividual ? "Tarea Individual" : (isGroup ? "Tarea Grupal" : "Tarea General")), 
+                date: taskDatePickerState.selectedDay.toISOString().split('T')[0], // Store date as ISO-MM-DD string
+                icon: 'BookOpen', 
+                type: 'task',
+                userId: userId // Add userId to the event
+            };
+
+            try {
+                const docRef = await addDoc(collection(db, `artifacts/${appId}/users/${userId}/events`), newTask);
+                console.log("Document written with ID: ", docRef.id);
+                showSuccessMessage(successMessage, '¡Guardado con éxito!'); // Show task success message
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                showCustomAlert('Error al guardar la tarea. Inténtalo de nuevo.');
+            }
+            
+            if (addTaskFormContainer) addTaskFormContainer.classList.add('hidden'); 
+            if (datePickerCalendar) datePickerCalendar.classList.add('hidden'); 
+            
+            // Data will be re-rendered by the onSnapshot listener
+        });
+
+        // --- Assignment Form Listeners ---
+        if (showAddAssignmentModalBtn) showAddAssignmentModalBtn.addEventListener('click', () => {
+            if (addAssignmentFormContainer) addAssignmentFormContainer.classList.remove('hidden');
+            if (addTaskFormContainer) addTaskFormContainer.classList.add('hidden'); // Hide other forms
+            if (datePickerCalendar) datePickerCalendar.classList.add('hidden'); // Hide other date pickers
+            if (addExamFormContainer) addExamFormContainer.classList.add('hidden'); // Hide other forms
+            if (datePickerCalendarExam) datePickerCalendarExam.classList.add('hidden'); // Hide other date pickers
+            if (addEventFormContainer) addEventFormContainer.classList.add('hidden'); // Hide other forms
+            if (datePickerCalendarEvent) datePickerCalendarEvent.classList.add('hidden'); // Hide other date pickers
+
+            if (assignmentForm) assignmentForm.reset();
+            assignmentDatePickerState.selectedDay = null; // Reset selected day for this form
+            if (assignmentDateInput) assignmentDateInput.value = '';
+            assignmentDatePickerState.currentMonth = selectedDay.getMonth(); // Set to selected calendar day's month/year
+            assignmentDatePickerState.currentYear = selectedDay.getFullYear();
+            renderDatePickerCalendar(datePickerDaysAssignment, datePickerMonthDisplayAssignment, assignmentDatePickerState, assignmentDateInput);
+        });
+
+        if (cancelAddAssignmentBtn) cancelAddAssignmentBtn.addEventListener('click', () => {
+            if (addAssignmentFormContainer) addAssignmentFormContainer.classList.add('hidden');
+            if (datePickerCalendarAssignment) datePickerCalendarAssignment.classList.add('hidden');
+        });
+
+        if (assignmentDateInput) assignmentDateInput.addEventListener('click', (event) => {
+            event.stopPropagation();
+            if (datePickerCalendarAssignment) {
+                datePickerCalendarAssignment.classList.toggle('hidden');
+                if (!datePickerCalendarAssignment.classList.contains('hidden')) {
+                    renderDatePickerCalendar(datePickerDaysAssignment, datePickerMonthDisplayAssignment, assignmentDatePickerState, assignmentDateInput);
+                }
+            }
+            if (datePickerCalendar) datePickerCalendar.classList.add('hidden'); // Hide other date picker
+            if (datePickerCalendarExam) datePickerCalendarExam.classList.add('hidden'); // Hide other date picker
+            if (datePickerCalendarEvent) datePickerCalendarEvent.classList.add('hidden'); // Hide other date picker
+        });
+
+        if (prevDatePickerMonthAssignmentBtn) prevDatePickerMonthAssignmentBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            assignmentDatePickerState.currentMonth--;
+            if (assignmentDatePickerState.currentMonth < 0) {
+                assignmentDatePickerState.currentMonth = 11;
+                assignmentDatePickerState.currentYear--;
+            }
+            renderDatePickerCalendar(datePickerDaysAssignment, datePickerMonthDisplayAssignment, assignmentDatePickerState, assignmentDateInput);
+        });
+
+        if (nextDatePickerMonthAssignmentBtn) nextDatePickerMonthAssignmentBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            assignmentDatePickerState.currentMonth++;
+            if (assignmentDatePickerState.currentMonth > 11) {
+                assignmentDatePickerState.currentMonth = 0;
+                assignmentDatePickerState.currentYear++;
+            }
+            renderDatePickerCalendar(datePickerDaysAssignment, datePickerMonthDisplayAssignment, assignmentDatePickerState, assignmentDateInput);
+        });
+
+        if (assignmentTypeIndividualCheckbox) assignmentTypeIndividualCheckbox.addEventListener('change', () => {
+            if (assignmentTypeIndividualCheckbox.checked) {
+                if (assignmentTypeGroupCheckbox) assignmentTypeGroupCheckbox.checked = false;
+            }
+        });
+
+        if (assignmentTypeGroupCheckbox) assignmentTypeGroupCheckbox.addEventListener('change', () => {
+            if (assignmentTypeGroupCheckbox.checked) {
+                if (assignmentTypeIndividualCheckbox) assignmentTypeIndividualCheckbox.checked = false;
+            }
+        });
+
+        if (assignmentForm) assignmentForm.addEventListener('submit', async (event) => { // Added async
+            event.preventDefault();
+
+            const titleValue = assignmentTitleInput.value.trim();
+            const descriptionValue = assignmentDescriptionInput.value.trim();
+            const isIndividual = assignmentTypeIndividualCheckbox.checked;
+            const isGroup = assignmentTypeGroupCheckbox.checked;
+
+            if (!assignmentDatePickerState.selectedDay) {
+                showCustomAlert('La Fecha es obligatoria. Por favor, selecciona una fecha del calendario.');
+                return;
+            }
+            if (!titleValue) {
+                showCustomAlert('El Título del trabajo práctico es obligatorio.');
+                return;
+            }
+
+            const newAssignment = {
+                name: titleValue,
+                subject: descriptionValue || (isIndividual ? "Trabajo Práctico Individual" : (isGroup ? "Trabajo Práctico Grupal" : "Trabajo Práctico")),
+                date: assignmentDatePickerState.selectedDay.toISOString().split('T')[0], // Store date as ISO-MM-DD string
+                icon: 'Flask', // Default icon for assignments
+                type: 'assignment',
+                userId: userId // Add userId to the event
+            };
+
+            try {
+                const docRef = await addDoc(collection(db, `artifacts/${appId}/users/${userId}/events`), newAssignment);
+                console.log("Document written with ID: ", docRef.id);
+                showSuccessMessage(assignmentSuccessMessage, '¡Trabajo Práctico guardado con éxito!'); // Show assignment success message
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                showCustomAlert('Error al guardar el trabajo práctico. Inténtalo de nuevo.');
+            }
+            
+            if (addAssignmentFormContainer) addAssignmentFormContainer.classList.add('hidden');
+            if (datePickerCalendarAssignment) datePickerCalendarAssignment.classList.add('hidden');
+            // Data will be re-rendered by the onSnapshot listener
+        });
+
+        // --- Exam Form Listeners ---
+        if (showAddExamModalBtn) showAddExamModalBtn.addEventListener('click', () => {
+            if (addExamFormContainer) addExamFormContainer.classList.remove('hidden');
+            if (addTaskFormContainer) addTaskFormContainer.classList.add('hidden'); // Hide other forms
+            if (datePickerCalendar) datePickerCalendar.classList.add('hidden'); // Hide other date pickers
+            if (addAssignmentFormContainer) addAssignmentFormContainer.classList.add('hidden'); // Hide other forms
+            if (datePickerCalendarAssignment) datePickerCalendarAssignment.classList.add('hidden'); // Hide other date pickers
+            if (addEventFormContainer) addEventFormContainer.classList.add('hidden'); // Hide other forms
+            if (datePickerCalendarEvent) datePickerCalendarEvent.classList.add('hidden'); // Hide other date pickers
+
+            if (examForm) examForm.reset();
+            examDatePickerState.selectedDay = null; // Reset selected day for this form
+            if (examDateInput) examDateInput.value = '';
+            examDatePickerState.currentMonth = selectedDay.getMonth(); // Set to selected calendar day's month/year
+            examDatePickerState.currentYear = selectedDay.getFullYear();
+            renderDatePickerCalendar(datePickerDaysExam, datePickerMonthDisplayExam, examDatePickerState, examDateInput);
+        });
+
+        if (cancelAddExamBtn) cancelAddExamBtn.addEventListener('click', () => {
+            if (addExamFormContainer) addExamFormContainer.classList.add('hidden');
+            if (datePickerCalendarExam) datePickerCalendarExam.classList.add('hidden');
+        });
+
+        if (examDateInput) examDateInput.addEventListener('click', (event) => {
+            event.stopPropagation();
+            if (datePickerCalendarExam) {
+                datePickerCalendarExam.classList.toggle('hidden');
+                if (!datePickerCalendarExam.classList.contains('hidden')) {
+                    renderDatePickerCalendar(datePickerDaysExam, datePickerMonthDisplayExam, examDatePickerState, examDateInput);
+                }
+            }
+            if (datePickerCalendar) datePickerCalendar.classList.add('hidden'); // Hide other date picker
+            if (datePickerCalendarAssignment) datePickerCalendarAssignment.classList.add('hidden'); // Hide other date picker
+            if (datePickerCalendarEvent) datePickerCalendarEvent.classList.add('hidden'); // Hide other date picker
+        });
+
+        if (prevDatePickerMonthExamBtn) prevDatePickerMonthExamBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            examDatePickerState.currentMonth--;
+            if (examDatePickerState.currentMonth < 0) {
+                examDatePickerState.currentMonth = 11;
+                examDatePickerState.currentYear--;
+            }
+            renderDatePickerCalendar(datePickerDaysExam, datePickerMonthDisplayExam, examDatePickerState, examDateInput);
+        });
+
+        if (nextDatePickerMonthExamBtn) nextDatePickerMonthExamBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            examDatePickerState.currentMonth++;
+            if (examDatePickerState.currentMonth > 11) {
+                examDatePickerState.currentMonth = 0;
+                examDatePickerState.currentYear++;
+            }
+            renderDatePickerCalendar(datePickerDaysExam, datePickerMonthDisplayExam, examDatePickerState, examDateInput);
+        });
+
+        if (examTypeOralCheckbox) examTypeOralCheckbox.addEventListener('change', () => {
+            if (examTypeOralCheckbox.checked) {
+                if (examTypeWrittenCheckbox) examTypeWrittenCheckbox.checked = false;
+            }
+        });
+
+        if (examTypeWrittenCheckbox) examTypeWrittenCheckbox.addEventListener('change', () => {
+            if (examTypeWrittenCheckbox.checked) {
+                if (examTypeOralCheckbox) examTypeOralCheckbox.checked = false;
+            }
+        });
+
+        if (examForm) examForm.addEventListener('submit', async (event) => { // Added async
+            event.preventDefault();
+
+            const titleValue = examTitleInput.value.trim();
+            const descriptionValue = examDescriptionInput.value.trim();
+            const isOral = examTypeOralCheckbox.checked;
+            const isWritten = examTypeWrittenCheckbox.checked;
+
+            if (!examDatePickerState.selectedDay) {
+                showCustomAlert('La Fecha es obligatoria. Por favor, selecciona una fecha del calendario.');
+                return;
+            }
+            if (!titleValue) {
+                showCustomAlert('El Título del examen es obligatorio.');
+                return;
+            }
+
+            const newExam = {
+                name: titleValue,
+                subject: descriptionValue || (isOral ? "Examen Oral" : (isWritten ? "Examen Escrito" : "Examen General")),
+                date: examDatePickerState.selectedDay.toISOString().split('T')[0], // Store date as ISO-MM-DD string
+                icon: 'TestTube', // Default icon for exams
+                type: 'exam',
+                userId: userId // Add userId to the event
+            };
+
+            try {
+                const docRef = await addDoc(collection(db, `artifacts/${appId}/users/${userId}/events`), newExam);
+                console.log("Document written with ID: ", docRef.id);
+                showSuccessMessage(examSuccessMessage, '¡Examen guardado con éxito!'); // Show exam success message
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                showCustomAlert('Error al guardar el examen. Inténtalo de nuevo.');
+            }
+            
+            if (addExamFormContainer) addExamFormContainer.classList.add('hidden');
+            if (datePickerCalendarExam) datePickerCalendarExam.classList.add('hidden');
+            // Data will be re-rendered by the onSnapshot listener
+        });
+
+        // --- Event Form Listeners - NEW ---
+        if (showAddEventModalBtn) showAddEventModalBtn.addEventListener('click', () => {
+            if (addEventFormContainer) addEventFormContainer.classList.remove('hidden');
+            if (addTaskFormContainer) addTaskFormContainer.classList.add('hidden'); // Hide other forms
+            if (datePickerCalendar) datePickerCalendar.classList.add('hidden'); // Hide other date pickers
+            if (addAssignmentFormContainer) addAssignmentFormContainer.classList.add('hidden'); // Hide other forms
+            if (datePickerCalendarAssignment) datePickerCalendarAssignment.classList.add('hidden'); // Hide other date pickers
+            if (addExamFormContainer) addExamFormContainer.classList.add('hidden'); // Hide other forms
+            if (datePickerCalendarExam) datePickerCalendarExam.classList.add('hidden'); // Hide other date pickers
+
+            if (eventForm) eventForm.reset();
+            eventDatePickerState.selectedDay = null; // Reset selected day for this form
+            if (eventDateInput) eventDateInput.value = '';
+            eventDatePickerState.currentMonth = selectedDay.getMonth(); // Set to selected calendar day's month/year
+            eventDatePickerState.currentYear = selectedDay.getFullYear();
+            renderDatePickerCalendar(datePickerDaysEvent, datePickerMonthDisplayEvent, eventDatePickerState, eventDateInput);
+        });
+
+        if (cancelAddEventBtn) cancelAddEventBtn.addEventListener('click', () => {
+            if (addEventFormContainer) addEventFormContainer.classList.add('hidden');
+            if (datePickerCalendarEvent) datePickerCalendarEvent.classList.add('hidden');
+        });
+
+        if (eventDateInput) eventDateInput.addEventListener('click', (event) => {
+            event.stopPropagation();
+            if (datePickerCalendarEvent) {
+                datePickerCalendarEvent.classList.toggle('hidden');
+                if (!datePickerCalendarEvent.classList.contains('hidden')) {
+                    renderDatePickerCalendar(datePickerDaysEvent, datePickerMonthDisplayEvent, eventDatePickerState, eventDateInput);
+                }
+            }
+            if (datePickerCalendar) datePickerCalendar.classList.add('hidden'); // Hide other date picker
+            if (datePickerCalendarAssignment) datePickerCalendarAssignment.classList.add('hidden'); // Hide other date picker
+            if (datePickerCalendarExam) datePickerCalendarExam.classList.add('hidden'); // Hide other date picker
+        });
+
+        if (prevDatePickerMonthEventBtn) prevDatePickerMonthEventBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            eventDatePickerState.currentMonth--;
+            if (eventDatePickerState.currentMonth < 0) {
+                eventDatePickerState.currentMonth = 11;
+                eventDatePickerState.currentYear--;
+            }
+            renderDatePickerCalendar(datePickerDaysEvent, datePickerMonthDisplayEvent, eventDatePickerState, eventDateInput);
+        });
+
+        if (nextDatePickerMonthEventBtn) nextDatePickerMonthEventBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            eventDatePickerState.currentMonth++;
+            if (eventDatePickerState.currentMonth > 11) {
+                eventDatePickerState.currentMonth = 0;
+                eventDatePickerState.currentYear++;
+            }
+            renderDatePickerCalendar(datePickerDaysEvent, datePickerMonthDisplayEvent, eventDatePickerState, eventDateInput);
+        });
+
+        if (eventTypePersonalCheckbox) eventTypePersonalCheckbox.addEventListener('change', () => {
+            if (eventTypePersonalCheckbox.checked) {
+                if (eventTypeAcademicCheckbox) eventTypeAcademicCheckbox.checked = false;
+            }
+        });
+
+        if (eventTypeAcademicCheckbox) eventTypeAcademicCheckbox.addEventListener('change', () => {
+            if (eventTypeAcademicCheckbox.checked) {
+                if (eventTypePersonalCheckbox) eventTypePersonalCheckbox.checked = false;
+            }
+        });
+
+        if (eventForm) eventForm.addEventListener('submit', async (event) => { // Added async
+            event.preventDefault();
+
+            const titleValue = eventTitleInput.value.trim();
+            const descriptionValue = eventDescriptionInput.value.trim();
+            const isPersonal = eventTypePersonalCheckbox.checked;
+            const isAcademic = eventTypeAcademicCheckbox.checked;
+
+            if (!eventDatePickerState.selectedDay) {
+                showCustomAlert('La Fecha es obligatoria. Por favor, selecciona una fecha del calendario.');
+                return;
+            }
+            if (!titleValue) {
+                showCustomAlert('El Título del evento es obligatorio.');
+                return;
+            }
+
+            const newEvent = {
+                name: titleValue,
+                subject: descriptionValue || (isPersonal ? "Evento Personal" : (isAcademic ? "Evento Académico" : "Evento General")),
+                date: eventDatePickerState.selectedDay.toISOString().split('T')[0], // Store date as ISO-MM-DD string
+                icon: 'Chat', // Default icon for events
+                type: 'other', // Using 'other' type for events
+                userId: userId // Add userId to the event
+            };
+
+            try {
+                const docRef = await addDoc(collection(db, `artifacts/${appId}/users/${userId}/events`), newEvent);
+                console.log("Document written with ID: ", docRef.id);
+                showSuccessMessage(eventSuccessMessage, '¡Evento guardado con éxito!'); // Show event success message
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                showCustomAlert('Error al guardar el evento. Inténtalo de nuevo.');
+            }
+            
+            if (addEventFormContainer) addEventFormContainer.classList.add('hidden');
+            if (datePickerCalendarEvent) datePickerCalendarEvent.classList.add('hidden');
+            // Data will be re-rendered by the onSnapshot listener
+        });
+      }
+
+      // Custom alert/message box function (replaces window.alert)
+      function showCustomAlert(message) {
+          // Create a simple modal or message box dynamically
+          const alertBox = document.createElement('div');
+          alertBox.classList.add('fixed', 'inset-0', 'bg-gray-600', 'bg-opacity-75', 'flex', 'items-center', 'justify-center', 'z-50');
+          alertBox.innerHTML = `
+              <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm mx-auto text-center">
+                  <p class="text-lg font-semibold text-gray-800 mb-4">${message}</p>
+                  <button id="closeAlertBtn" class="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">OK</button>
+              </div>
+          `;
+          document.body.appendChild(alertBox);
+
+          document.getElementById('closeAlertBtn').addEventListener('click', () => {
+              document.body.removeChild(alertBox);
+          });
+      }
+
+      // Custom alert/message box function for general alerts (e.g., bell icon)
+      function showAlertMessage(message) {
+          const alertBox = document.createElement('div');
+          alertBox.classList.add(
+              'fixed', 'bottom-6', 'left-1/2', '-translate-x-1/2', 'bg-blue-600', 'text-white', 
+              'px-6', 'py-3', 'rounded-full', 'shadow-lg', 'flex', 'items-center', 'space-x-2',
+              'z-50', 'opacity-0', 'transition-opacity', 'duration-300'
+          );
+          alertBox.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>${message}</span>
+          `;
+          document.body.appendChild(alertBox);
+
+          // Animate in
+          setTimeout(() => {
+              alertBox.classList.remove('opacity-0');
+              alertBox.classList.add('opacity-100');
+          }, 10);
+
+          // Animate out and remove after a delay
+          setTimeout(() => {
+              alertBox.classList.remove('opacity-100');
+              alertBox.classList.add('opacity-0');
+              alertBox.addEventListener('transitionend', () => {
+                  if (alertBox.parentNode) {
+                      alertBox.parentNode.removeChild(alertBox);
+                  }
+              }, { once: true });
+          }, 3000); // Message visible for 3 seconds
+      }
+
+
+      function showSuccessMessage(messageElement, text) {
+          if (messageElement) {
+              messageElement.querySelector('span').textContent = text;
+              messageElement.classList.remove('hidden');
+              setTimeout(() => {
+                  messageElement.classList.add('hidden');
+              }, 3000); 
+          }
+      }
+
+      // Navigation logic
+      function showSection(sectionId) {
+        const sections = document.querySelectorAll('.layout-content-container');
+        sections.forEach(section => {
+          if (section.id === sectionId) {
+            section.style.display = 'flex'; 
+          } else {
+            section.style.display = 'none';
+          }
+        });
+        // Call renderUpcomingEvents only when panel-section is shown
+        if (sectionId === 'panel-section') {
+            renderUpcomingEvents();
+        }
+      }
+
+      // Firestore data listener
+      function setupFirestoreListener() {
+          if (!db || !userId || !appId) { 
+              console.error("Firestore, userId, or appId not initialized. Retrying authentication...");
+              // If these are not ready, it means authentication might still be in progress or failed.
+              // We don't re-call setupFirestoreListener directly here to avoid infinite loops.
+              // The onAuthStateChanged listener will call it once auth is ready.
+              return;
+          }
+
+          const eventsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/events`);
+          const q = query(eventsCollectionRef); 
+
+          onSnapshot(q, (snapshot) => {
+              userEvents = []; 
+              snapshot.forEach(doc => {
+                  userEvents.push({ id: doc.id, ...doc.data() });
+              });
+              console.log("Events loaded from Firestore:", userEvents);
+              renderMonthCalendar();
+              renderWeekCalendar();
+              renderDayCalendar();
+              renderDayEvents(selectedDay);
+              renderMonthEvents();
+              renderWeekEvents();
+              renderUpcomingEvents();
+          }, (error) => {
+              console.error("Error listening to events:", error);
+              showCustomAlert("Error al cargar los eventos desde la base de datos.");
+          });
+      }
+
+      // DOM elements for mobile menu
+      let hamburgerBtn;
+      let mobileMenu;
+      let closeMobileMenuBtn;
+      let mobileNavLinks;
+      let bellBtn; // Declared bellBtn globally
+
+
+      // Initial setup on DOMContentLoaded
+      document.addEventListener('DOMContentLoaded', async () => { 
+        // Inicializar Firebase
+        try {
+            const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            
+            appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; 
+
+            // Intentar autenticación con token personalizado
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token !== '') { // Added check for empty string
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                    console.log("Signed in with custom token.");
+                } else {
+                    console.log("No custom token provided, signing in anonymously.");
+                    await signInAnonymously(auth);
+                }
+            } catch (authError) {
+                console.warn("Custom token sign-in failed:", authError.message, "Attempting anonymous sign-in as fallback.");
+                // If custom token fails, try anonymous sign-in
+                await signInAnonymously(auth);
+            }
+
+            // Una vez autenticado (ya sea con token o anónimamente), obtenemos el userId y configuramos el listener de Firestore
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    console.log("User ID:", userId);
+                    // No mostrar el userId en el frontend
+                    setupFirestoreListener(); 
+                } else {
+                    console.log("No user is signed in.");
+                    userId = null;
+                    userEvents = []; 
+                    renderMonthCalendar();
+                    renderWeekCalendar();
+                    renderDayCalendar();
+                    renderDayEvents(selectedDay);
+                    renderMonthEvents();
+                    renderWeekEvents();
+                    renderUpcomingEvents();
+                }
+            });
+
+        } catch (error) {
+            console.error("Error initializing Firebase:", error);
+            showCustomAlert("Error al inicializar la conexión con la base de datos.");
+        }
+
+
+        // Assign DOM elements for main calendar and sections
+        monthDisplay = document.getElementById('monthDisplay');
+        calendarDaysMonth = document.getElementById('calendarDaysMonth');
+        prevMonthBtn = document.getElementById('prevMonthBtn');
+        nextMonthBtn = document.getElementById('nextMonthBtn');
+
+        weekDisplay = document.getElementById('weekDisplay');
+        calendarDaysWeek = document.getElementById('calendarDaysWeek');
+        prevWeekBtn = document.getElementById('prevWeekBtn');
+        nextWeekBtn = document.getElementById('nextWeekBtn');
+
+        dayDisplay = document.getElementById('dayDisplay');
+        currentDayNameDisplay = document.getElementById('currentDayNameDisplay');
+        calendarDaysDay = document.getElementById('calendarDaysDay');
+        prevDayBtn = document.getElementById('prevDayBtn');
+        nextDayBtn = document.getElementById('nextDayBtn');
+
+        upcomingEventsContainer = document.getElementById('upcomingEvents');
+        selectedDayEventsContainer = document.getElementById('selectedDayEventsContainer');
+        selectedDayTitle = document.getElementById('selectedDayTitle');
+        navLinks = document.querySelectorAll('nav a'); // Desktop nav links
+        sections = document.querySelectorAll('.layout-content-container');
+        calendarViewButtons = document.querySelectorAll('[data-calendar-view]');
+
+        monthEventsTitle = document.getElementById('monthEventsTitle');
+        monthEventsContainer = document.getElementById('monthEventsContainer');
+        weekEventsTitle = document.getElementById('weekEventsTitle');
+        weekEventsContainer = document.getElementById('weekEventsContainer');
+
+        // Assign DOM elements for mobile menu and bell button
+        hamburgerBtn = document.getElementById('hamburgerBtn');
+        mobileMenu = document.getElementById('mobile-menu');
+        closeMobileMenuBtn = document.getElementById('closeMobileMenuBtn');
+        mobileNavLinks = document.querySelectorAll('#mobile-menu nav a'); // Links inside the mobile menu
+        bellBtn = document.getElementById('bellBtn'); // Assign bellBtn here
+
+        // Initialize form listeners
+        initializeFormListeners(); 
+
+        // Attach calendar navigation listeners
+        if (prevMonthBtn) prevMonthBtn.addEventListener('click', () => {
+          currentMonth--;
+          if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+          }
+          const daysInNewMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+          selectedDay = new Date(currentYear, currentMonth, Math.min(selectedDay.getDate(), daysInNewMonth));
+          renderMonthCalendar();
+          renderDayEvents(selectedDay); 
+          renderMonthEvents(); 
+        });
+
+        if (nextMonthBtn) nextMonthBtn.addEventListener('click', () => {
+          currentMonth++;
+          if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+          }
+          const daysInNewMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+          selectedDay = new Date(currentYear, currentMonth, Math.min(selectedDay.getDate(), daysInNewMonth));
+          renderMonthCalendar();
+          renderDayEvents(selectedDay); 
+          renderMonthEvents(); 
+        });
+
+        if (prevWeekBtn) prevWeekBtn.addEventListener('click', () => {
+          currentWeekStartDate.setDate(currentWeekStartDate.getDate() - 7);
+          selectedDay = new Date(currentWeekStartDate); 
+          renderWeekCalendar();
+          renderDayEvents(selectedDay);
+          renderWeekEvents(); 
+        });
+
+        if (nextWeekBtn) nextWeekBtn.addEventListener('click', () => {
+          currentWeekStartDate.setDate(currentWeekStartDate.getDate() + 7);
+          selectedDay = new Date(currentWeekStartDate); 
+          renderWeekCalendar();
+          renderDayEvents(selectedDay);
+          renderWeekEvents(); 
+        });
+
+        if (prevDayBtn) prevDayBtn.addEventListener('click', () => {
+            selectedDay.setDate(selectedDay.getDate() - 1);
+            renderDayCalendar();
+            renderDayEvents(selectedDay);
+            renderMonthCalendar();
+            renderWeekCalendar();
+        });
+
+        if (nextDayBtn) nextDayBtn.addEventListener('click', () => {
+            selectedDay.setDate(selectedDay.getDate() + 1);
+            renderDayCalendar();
+            renderDayEvents(selectedDay);
+            renderMonthCalendar();
+            renderWeekCalendar();
+        });
+
+        // Desktop nav links (already handled)
+        navLinks.forEach(link => {
+          link.addEventListener('click', (event) => {
+            event.preventDefault(); 
+            const sectionId = event.target.dataset.section + '-section';
+            showSection(sectionId);
+          });
+        });
+
+        calendarViewButtons.forEach(button => {
+          button.addEventListener('click', (event) => {
+            const view = event.target.dataset.calendarView;
+            
+            // Hide all specific calendar event sections first
+            if (monthEventsTitle) monthEventsTitle.classList.add('hidden');
+            if (monthEventsContainer) monthEventsContainer.classList.add('hidden');
+            if (weekEventsTitle) weekEventsTitle.classList.add('hidden');
+            if (weekEventsContainer) weekEventsContainer.classList.add('hidden');
+
+            document.getElementById('month-view').classList.add('hidden');
+            document.getElementById('week-view').classList.add('hidden');
+            document.getElementById('day-view').classList.add('hidden');
+
+            if (view === 'month') {
+              document.getElementById('month-view').classList.remove('hidden');
+              currentMonth = selectedDay.getMonth();
+              currentYear = selectedDay.getFullYear();
+              renderMonthCalendar(); 
+              renderMonthEvents(); 
+            } else if (view === 'week') {
+              document.getElementById('week-view').classList.remove('hidden');
+              currentWeekStartDate = getMonday(selectedDay); 
+              renderWeekCalendar(); 
+              renderWeekEvents(); 
+            } else if (view === 'day') {
+              document.getElementById('day-view').classList.remove('hidden');
+              renderDayCalendar(); 
+            }
+
+            calendarViewButtons.forEach(btn => {
+              btn.classList.remove('bg-[#6A8EEB]', 'text-white');
+              btn.classList.add('bg-[#e7edf3]', 'text-[#334155]');
+            });
+            event.target.classList.remove('bg-[#e7edf3]', 'text-[#334155]');
+            event.target.classList.add('bg-[#6A8EEB]', 'text-white');
+          });
+        });
+
+        // Mobile menu event listeners
+        if (hamburgerBtn) {
+            hamburgerBtn.addEventListener('click', () => {
+                if (mobileMenu) {
+                    mobileMenu.classList.remove('hidden');
+                }
+            });
+        }
+
+        if (closeMobileMenuBtn) {
+            closeMobileMenuBtn.addEventListener('click', () => {
+                if (mobileMenu) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        if (mobileNavLinks) {
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const sectionId = event.target.dataset.section + '-section';
+                    showSection(sectionId);
+                    if (mobileMenu) {
+                        mobileMenu.classList.add('hidden'); // Close menu after clicking a link
+                    }
+                });
+            });
+        }
+
+        // Bell button alert functionality
+        if (bellBtn) {
+            bellBtn.addEventListener('click', () => {
+                showAlertMessage("No hay nuevas alertas.");
+            });
+        }
+
+        // Initial rendering on load
+        selectedDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        currentMonth = selectedDay.getMonth();
+        currentYear = selectedDay.getFullYear();
+
+        // The initial render will be triggered by the Firestore listener after authentication
+        showSection('calendar-section'); // Initially show calendar section
+      });
+    </script>
+  </body>
+</html>
