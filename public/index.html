@@ -13,8 +13,88 @@
     <title>StudyMate Agenda - Móvil</title>
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries">
+function openEventFormForEdit(eventId) {
+  const event = userEvents.find(e => e.id === eventId);
+  if (!event) {
+    console.error("Evento no encontrado para editar");
+    return;
+  }
+
+  currentEditingEventId = eventId;
+
+  eventTitleInput.value = event.name || "";
+
+  const eventDate = parseDateString(event.date);
+  eventDatePickerState.selectedDay = eventDate;
+  eventDatePickerState.currentMonth = eventDate.getMonth();
+  eventDatePickerState.currentYear = eventDate.getFullYear();
+  eventDateInput.value = eventDate.toLocaleDateString("es-ES");
+
+  renderDatePickerCalendar(
+    datePickerDaysEvent,
+    datePickerMonthDisplayEvent,
+    eventDatePickerState,
+    eventDateInput
+  );
+
+  addEventFormContainer.classList.remove("hidden");
+}
+
+async function deleteEvent(eventId) {
+  if (!confirm("¿Estás seguro de eliminar este evento?")) return;
+
+  try {
+    await deleteDoc(doc(db, "events", eventId));
+    showCustomAlert("Evento eliminado con éxito.");
+    loadEvents();
+  } catch (error) {
+    console.error("Error al eliminar evento:", error);
+    showCustomAlert("Error al eliminar evento.");
+  }
+}
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js">
+function openEventFormForEdit(eventId) {
+  const event = userEvents.find(e => e.id === eventId);
+  if (!event) {
+    console.error("Evento no encontrado para editar");
+    return;
+  }
+
+  currentEditingEventId = eventId;
+
+  eventTitleInput.value = event.name || "";
+
+  const eventDate = parseDateString(event.date);
+  eventDatePickerState.selectedDay = eventDate;
+  eventDatePickerState.currentMonth = eventDate.getMonth();
+  eventDatePickerState.currentYear = eventDate.getFullYear();
+  eventDateInput.value = eventDate.toLocaleDateString("es-ES");
+
+  renderDatePickerCalendar(
+    datePickerDaysEvent,
+    datePickerMonthDisplayEvent,
+    eventDatePickerState,
+    eventDateInput
+  );
+
+  addEventFormContainer.classList.remove("hidden");
+}
+
+async function deleteEvent(eventId) {
+  if (!confirm("¿Estás seguro de eliminar este evento?")) return;
+
+  try {
+    await deleteDoc(doc(db, "events", eventId));
+    showCustomAlert("Evento eliminado con éxito.");
+    loadEvents();
+  } catch (error) {
+    console.error("Error al eliminar evento:", error);
+    showCustomAlert("Error al eliminar evento.");
+  }
+}
+</script>
     <style>
       /* [GLOBAL] :: UI - Estilos generales y para componentes específicos. */
       .layout-content-container {
@@ -1129,20 +1209,13 @@
               <div
                 class="bg-green-100 text-green-800 px-6 py-3 rounded-full shadow-lg flex items-center space-x-2"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="feather feather-check-circle"
-                >
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-8.63"></path>
-                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+              fill="currentColor" viewBox="0 0 256 256">
+           <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66
+                    -56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34
+                    -50.35a8,8,0,0,1,11.32,11.32Z">
+           </path>
+         </svg>
                 <span>¡Examen guardado con éxito!</span>
               </div>
             </div>
@@ -1225,22 +1298,21 @@
                   </div>
                 </div>
                 <div>
-                  <label
-                    for="examTitle"
-                    class="block text-sm font-medium text-[#334155]"
-                    >Examen:</label
-                  >
-                  <input
-                    type="text"
-                    id="examTitle"
+                  <label for="examSubjectSelect" class="block text-sm font-medium text-[#334155]">
+                    Materia:
+                  </label>
+                  <select
+                    id="examSubjectSelect"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-10 px-3 py-2"
-                  />
+                  >
+                    <!-- Opciones cargadas dinámicamente -->
+                  </select>
                 </div>
                 <div>
                   <label
                     for="examDescription"
                     class="block text-sm font-medium text-[#334155]"
-                    >Descripción (Opcional):</label
+                    >Descripción del Exámen:</label
                   >
                   <textarea
                     id="examDescription"
@@ -1356,20 +1428,13 @@
               <div
                 class="bg-green-100 text-green-800 px-6 py-3 rounded-full shadow-lg flex items-center space-x-2"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="feather feather-check-circle"
-                >
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-8.63"></path>
-                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+              fill="currentColor" viewBox="0 0 256 256">
+           <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66
+                    -56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34
+                    -50.35a8,8,0,0,1,11.32,11.32Z">
+           </path>
+         </svg>
                 <span>¡Evento guardado con éxito!</span>
               </div>
             </div>
@@ -2717,18 +2782,20 @@
         e.preventDefault();
         if (!userId) { showCustomAlert("Debes iniciar sesión."); return; }
         saveExamBtn.disabled = true;
-
-        const date = examDatePickerState.selectedDay;
-        const name = examTitleInput.value.trim();
-        const subject = examDescriptionInput.value.trim(); // Using description as subject for exams
+        const date    = examDatePickerState.selectedDay;
+        const subject = examSubjectSelect.value;
+        const name    = examDescriptionInput.value.trim(); // Using description as subject for exams
         let category = "";
         if (examTypeOralCheckbox.checked) category = "Oral";
         else if (examTypeWrittenCheckbox.checked) category = "Escrito";
         const selectedPriorityBtn = document.querySelector('#exam-priority-group-final .priority-btn.active');
         const priority = selectedPriorityBtn ? selectedPriorityBtn.dataset.priority : 'medium';
 
-        if (!date || !name) { showCustomAlert("Título y fecha son obligatorios."); saveExamBtn.disabled = false; return; }
-        
+        if (!date || !name || !subject) {
+    showCustomAlert("La materia, descripción y fecha son obligatorios.");
+    saveExamBtn.disabled = false;
+    return;
+}        
         const eventData = {
             name: name,
             subject: subject,
@@ -3229,7 +3296,7 @@
 
       function populateSubjectsDropdown() {
         // Include assignmentSubjectSelect here
-        const dropdowns = [taskSubjectSelect, assignmentSubjectSelect];
+        const dropdowns = [taskSubjectSelect, assignmentSubjectSelect, examSubjectSelect];
         dropdowns.forEach(dropdown => {
             if (!dropdown) return;
             const currentValue = dropdown.value;
@@ -3723,6 +3790,46 @@
         showSection("calendar-section");
         renderAllViews();
       });
-    </script>
+    
+function openEventFormForEdit(eventId) {
+  const event = userEvents.find(e => e.id === eventId);
+  if (!event) {
+    console.error("Evento no encontrado para editar");
+    return;
+  }
+
+  currentEditingEventId = eventId;
+
+  eventTitleInput.value = event.name || "";
+
+  const eventDate = parseDateString(event.date);
+  eventDatePickerState.selectedDay = eventDate;
+  eventDatePickerState.currentMonth = eventDate.getMonth();
+  eventDatePickerState.currentYear = eventDate.getFullYear();
+  eventDateInput.value = eventDate.toLocaleDateString("es-ES");
+
+  renderDatePickerCalendar(
+    datePickerDaysEvent,
+    datePickerMonthDisplayEvent,
+    eventDatePickerState,
+    eventDateInput
+  );
+
+  addEventFormContainer.classList.remove("hidden");
+}
+
+async function deleteEvent(eventId) {
+  if (!confirm("¿Estás seguro de eliminar este evento?")) return;
+
+  try {
+    await deleteDoc(doc(db, "events", eventId));
+    showCustomAlert("Evento eliminado con éxito.");
+    loadEvents();
+  } catch (error) {
+    console.error("Error al eliminar evento:", error);
+    showCustomAlert("Error al eliminar evento.");
+  }
+}
+</script>
   </body>
 </html>
